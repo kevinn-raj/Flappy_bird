@@ -122,8 +122,8 @@ public class Jumper : Agent
             Jump();
         }
 
-        // If nothing happens
-        AddReward(.2f);
+        // // If nothing happens
+        // AddReward(.2f);
 
     }
  
