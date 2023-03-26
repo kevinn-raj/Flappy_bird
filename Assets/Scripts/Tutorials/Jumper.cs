@@ -122,8 +122,8 @@ public class Jumper : Agent
             Jump();
         }
 
-        // // If nothing happens
-        // AddReward(.2f);
+        // If nothing happens
+        AddReward(.2f);
 
     }
  
@@ -250,7 +250,7 @@ public class Jumper : Agent
         // Loooooose
         if (collidedObj.gameObject.CompareTag("Obstacle"))
             {
-                AddReward(-1);
+                AddReward(-5);
                 // Debug.Log(GetCumulativeReward());
                 // Reset the spawner, delete all the instances
                 Pipe_spawner.GetComponent<Pipe_Spawner>().Reset();
@@ -265,6 +265,11 @@ public class Jumper : Agent
             // ScoreCollector.Instance.AddScore(score);
             AddReward(1);
 
+            // Goal reached
+            if(score >= 10) {
+                AddReward(10);
+                EndEpisode();
+            }
         }
     }
 }
