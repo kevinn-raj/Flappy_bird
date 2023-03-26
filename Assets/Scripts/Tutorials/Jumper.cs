@@ -122,8 +122,6 @@ public class Jumper : Agent
             Jump();
         }
 
-        // If nothing happens
-        AddReward(.2f);
 
     }
  
@@ -265,8 +263,14 @@ public class Jumper : Agent
             // ScoreCollector.Instance.AddScore(score);
             AddReward(1);
 
+            if(score == 3) {
+                AddReward(1);
+            }
+            else if(score == 5) {
+                AddReward(2);
+            }
             // Goal reached
-            if(score >= 10) {
+            else if(score == 10) {
                 AddReward(10);
                 EndEpisode();
             }
