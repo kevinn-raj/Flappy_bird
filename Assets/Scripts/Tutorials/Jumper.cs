@@ -9,6 +9,7 @@ using Random = UnityEngine.Random;
 
 public class Jumper : Agent
 {
+    public bool isTraining = true;
     [SerializeField] private float jumpForce;
     [SerializeField] private string jumpKey;
     
@@ -44,7 +45,6 @@ public class Jumper : Agent
     
 
     public bool useObs = true;
-
 
 
     public event Action OnReset;
@@ -272,7 +272,9 @@ public class Jumper : Agent
             // Goal reached
             else if(score == 10) {
                 AddReward(10);
-                EndEpisode();
+                // only end the episode on training
+                if(isTraining)
+                    EndEpisode();
             }
         }
     }
