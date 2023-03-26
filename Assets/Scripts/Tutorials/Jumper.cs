@@ -248,7 +248,7 @@ public class Jumper : Agent
         // Loooooose
         if (collidedObj.gameObject.CompareTag("Obstacle"))
             {
-                AddReward(-5);
+                SetReward(-1);
                 // Debug.Log(GetCumulativeReward());
                 // Reset the spawner, delete all the instances
                 Pipe_spawner.GetComponent<Pipe_Spawner>().Reset();
@@ -261,17 +261,11 @@ public class Jumper : Agent
             score++;
             maxScore = Mathf.Max(score, maxScore);
             // ScoreCollector.Instance.AddScore(score);
-            AddReward(1);
+            AddReward(.1f);
 
-            if(score == 3) {
-                AddReward(1);
-            }
-            else if(score == 5) {
-                AddReward(2);
-            }
             // Goal reached
-            else if(score == 10) {
-                AddReward(10);
+            if(score == 10) {
+                SetReward(1);
                 // only end the episode on training
                 if(isTraining)
                     EndEpisode();
