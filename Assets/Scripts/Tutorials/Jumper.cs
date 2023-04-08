@@ -25,12 +25,12 @@ public class Jumper : Agent
     private float YMAX = 6;
     private float ZMAX = 6;
 
-    private Rigidbody rBody;
+    public Rigidbody rBody;
     private Vector3 startingPosition;
     [SerializeField]
-    private int score = 0;
+    public int score = 0;
     [SerializeField]
-    private  int maxScore = 0;
+    public  int maxScore = 0;
 
     public GameObject ground;
     public GameObject roof;
@@ -40,8 +40,11 @@ public class Jumper : Agent
     // To store the next target  (the score triggers), the element will be replaced by the next score trigger,
     // whenever the player hits its trigger
     [SerializeField]
+    [Range(1,2)]
+    private int target_numbers = 2; // Number of target the agent can see
+    [SerializeField]
     // private GameObject target=null; 
-    private GameObject[] targets = new GameObject[2];
+    private GameObject[] targets = new GameObject[2]; // this target array has always 2 elements
     
 
     public bool useObs = true;
@@ -78,7 +81,9 @@ public class Jumper : Agent
             sensor.AddObservation(Mathf.Abs(roofMinY - transform.position.y));
 
         // Add each target as observation    
-        foreach(GameObject target in targets){    
+        // Only add the first target_numbers-th element as observation
+        for(int i=0; i<target_numbers; i++){  
+            GameObject target = targets[i];
         // Get the scoring Triggers
             //// If the target is not null
             if(target){
@@ -171,9 +176,11 @@ public class Jumper : Agent
         
         // Add custom gravity force 
         rBody.AddForce(Physics.gravity * gravity_multiplier);
+        Debug.Log(rBody);
 
     }
     public void LateUpdate(){
+        
          /* Update the target */
         List<GameObject> pipes = Pipe_spawner.GetComponent<Pipe_Spawner>().pipes_spawned;        
         if(pipes.Count != 0) // The pipes is not empty
