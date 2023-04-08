@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEditor;
 using System.Collections.Generic;
+using Random = UnityEngine.Random;
 
 public class Pipe_Spawner : MonoBehaviour
 {
@@ -46,9 +47,11 @@ public class Pipe_Spawner : MonoBehaviour
         minY = Mathf.Clamp(minY, limitsY[0], limitsY[1]);
         maxY = Mathf.Clamp(maxY, limitsY[0], limitsY[1]);
 
+        // Random.InitState(15); // fix random
     }
     private void OnEnable()
     {
+        
         InvokeRepeating(nameof(Spawn), 0, spawnRate);
 
     }
@@ -81,6 +84,7 @@ public class Pipe_Spawner : MonoBehaviour
         }
         pipes_spawned.Clear();
         numOfSpawnedPipes = pipes_spawned.Count; // Updates the # of spawned Pipes
+        // Random.InitState(15); // fix random
     }
 
 
