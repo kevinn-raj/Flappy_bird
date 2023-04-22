@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEditor;
 using Unity.MLAgents;
 using Unity.MLAgents.Actuators;
 using Unity.MLAgents.Sensors;
@@ -8,86 +9,175 @@ using Random = UnityEngine.Random;
 
 public class Generator : Agent
 {
-    // [Header("Specific to the pipes")]
-    // public GameObject prefab;
-    // public float pipe_Hole_Height = 2.5f; // The same as Distance in Pipes
-    // [Tooltip("Distance between two consecutive pair of pipes")]
-    // public float nextPipeDistance = 2f;
-    // [HideInInspector]
-    // public float spawnRate; // time bewteen spawn
-    // public float pipeSpeed=3; // 3 matches with the speed of the ground texture animation
+    [Header("Auxiliary Input")]
+    [Range(-1f,1f)]
+    public float aux_input=1f;
 
-    // // min and max values for the random Y coordinate
-    // [Range(-3.25f, 3.25f)]
-    // public float minY;
-    // [Range(-3.25f, 3.25f)]
-    // public float maxY;
+    [Header("Generator actions")]
+    // Hole height
+    //  minimum 1.5, Always positive
+    public float height_m; //mean
+    public float height_std; //standard deviation
+    const float height_min=1.5f;
 
-    // // limits for the y coordinate of the pipe parent object
-    // private float[] limitsY = new float[2];
+    // Horizontal distance between consecutive holes
+    // minimum 1.12, Always Positive
+    public float h_distance_m; //mean; 
+    public float h_distance_std; //std
+    const float h_distance_min=1.12f;
 
-    //  //Height in unit that is seen by the camera, actually the camera can see from
-    // // y = 5 to y = -5 : bg_height/2 to -bg_height/2, so is centered at y=0
-    // private float bg_height = 10;
+    // Vertical difference between consecutive holes
+    // The next minus previous
+    // Can be negative
+    public float v_difference_m; //mean
+    public float v_difference_std; //std
 
-    // // List of the Spawned pipes
-    // public int numOfSpawnedPipes;
-    // [HideInInspector]
-    // public List<GameObject> pipes_spawned = new List<GameObject>(); 
+    // obstacle speed, constant for an episode an same for every obstacle
+    // Positive
+    public float obst_speed;
 
-    // public void Awake(){
-    //     // Initialize the spawnRate
-    //     spawnRate = nextPipeDistance / pipeSpeed;
-    //     numOfSpawnedPipes = pipes_spawned.Count; // Updates the # of spawned Pipes
+    [Header("Parameters")]
+    [Min(0)]
+    public int n_obstacles = 10;
+    public GameObject prefab;
 
+    /* Limits and Constraints */
+    float top_maxy = 4.8f;
+    float bottom_maxy;
+    float bottom_miny = -4.5f;
+    float top_miny;
 
-    //     // Initialize the y-coordinate limits
-    //   // with some padding 0.5 to avoid the Pipe to disappear completely from the screen
-    //     limitsY[0] = -bg_height/2 + .5f + pipe_Hole_Height/2; // lower limit
-    //     limitsY[1] = bg_height/2 - .5f - pipe_Hole_Height/2; // upper limit
+    bool fails = false; // Check if the generator has failed the constraints
 
-    //     // Clamp the minY and maxY to not exceed the limits
-    //     minY = Mathf.Clamp(minY, limitsY[0], limitsY[1]);
-    //     maxY = Mathf.Clamp(maxY, limitsY[0], limitsY[1]);
+    float GetRandom(float mean, float std){
+        // mean = (max + min)/2
+        // std = (max - min)/2
+        float max_n = mean + std;
+        float min_n = mean - std;
+        return Random.Range(min_n, max_n);
+    }
 
-    //     // Random.InitState(15); // fix random
-    // }
-    // private void OnEnable()
-    // {
-        
-    //     InvokeRepeating(nameof(Spawn), 0, spawnRate);
+    // Return randomly -1 or +1
+    float GetRandomSign(){
+        return Mathf.Sign(Random.Range(-1, 1));
+    }
 
-    // }
+    void Awake(){
+        bottom_maxy = top_maxy - height_min;
+        top_miny = bottom_miny + height_min;
+    }
 
-    // private void OnDisable()
-    // {
-    //     CancelInvoke(nameof(Spawn));
-    // }
+    public override void CollectObservations(VectorSensor sensor){
+        sensor.AddObservation(aux_input);
+    }
 
-    // private void Spawn()
-    // {
+    // Generate Randomly Proceduraly
+    public void CreateRandomly(){
+        // To store the position of the previous obstacle
+        Vector3 previous = transform.position; // 
 
+        for(int i=0; i<n_obstacles; i++){
+            // Instantiate the obstacle in the same position as previous
+            GameObject pipe = Instantiate(prefab, previous, Quaternion.identity);
 
-    //     GameObject pipe = Instantiate(prefab, transform.position, Quaternion.identity);
-    //     pipe.GetComponent<Pipes>().Distance = pipe_Hole_Height;
-    //     pipe.transform.position += Vector3.up * Random.Range(minY, maxY);
-    //     pipe.GetComponent<Pipes>().speed = pipeSpeed;
+            // Set height of the hole
+            pipe.GetComponent<Obstacles>().Distance = GetRandom(height_m, height_std);
 
-    //     // Append the element by reference
-    //     pipes_spawned.Add(pipe);
-    //     numOfSpawnedPipes = pipes_spawned.Count; // Updates the # of spawned Pipes
+            // Vertical position difference, + or -
+            pipe.transform.position += Vector3.up * GetRandom(v_difference_m, v_difference_std); 
 
-    //     pipe.GetComponent<Pipes>().spawner = this;
-    // }
+            // Horizontal position, only to the right
+            pipe.transform.position += Vector3.right * GetRandom(h_distance_m, h_distance_std);
 
-    // public void Reset(){
+            // Reassign the variable to the actual obstacle
+            previous = pipe.transform.position;
 
-    //     foreach (GameObject p in pipes_spawned) {
-    //         Destroy(p.gameObject);
-    //     }
-    //     pipes_spawned.Clear();
-    //     numOfSpawnedPipes = pipes_spawned.Count; // Updates the # of spawned Pipes
-    //     // Random.InitState(15); // fix random
-    // }
+            // Obstacle speed
+            pipe.GetComponent<Obstacles>().speed = obst_speed;
+        }
+    }
+
+    // Generate with the Generator Agent
+    public void CreateWithAgent(){
+        // To store the position of the previous obstacle
+        Vector3 previous = transform.position; // 
+
+        for(int i=0; i<n_obstacles; i++){
+            RequestDecision(); 
+
+            // Instantiate the obstacle in the same position as previous
+            GameObject pipe = Instantiate(prefab, previous, Quaternion.identity);
+
+            /* Request the actions */
+
+            // Set height of the hole
+            pipe.GetComponent<Obstacles>().Distance = GetRandom(height_m, height_std);
+
+            // Vertical position difference, + or -
+            pipe.transform.position += Vector3.up * GetRandom(v_difference_m, v_difference_std); 
+
+            // Horizontal position, only to the right
+            pipe.transform.position += Vector3.right * GetRandom(h_distance_m, h_distance_std);
+
+            // Reassign the variable to the actual obstacle
+            previous = pipe.transform.position;
+
+            // Obstacle speed
+            pipe.GetComponent<Obstacles>().speed = obst_speed;
+
+            /* Constraints - Rewarding the Generator*/
+            // Internal Reward
+            Transform top = pipe.transform.Find("Top Pipe");
+            if(top.position.y > top_maxy){
+                // Penalize proportionnally to the mistake
+                AddReward(1f * (top_maxy - top.position.y));
+                fails = true;
+            }else if(top.position.y < top_miny){
+                AddReward(1f * (top.position.y - top_miny));
+                fails = true;
+            }
+
+            Transform bottom = pipe.transform.Find("Bottom Pipe");
+            if(bottom.position.y > bottom_maxy){
+                // Penalize proportionnally to the mistake
+                AddReward(1f * (bottom_maxy - bottom.position.y));
+                fails = true;
+            }else if(bottom.position.y < bottom_miny){
+                AddReward(1f * (bottom.position.y - bottom_miny));
+                fails = true;
+            }
+        }
+        // After Creating the obstacles
+        // End the generator episode if there was a fail
+        // Do not continue the training, even for the solver if the generator has failed
+        // if(fails) EndEpisode();
+    }
+
+    public override void OnEpisodeBegin(){
+        CreateWithAgent();
+    }
+
+    public override void OnActionReceived(ActionBuffers actionBuffers){
+        var act = actionBuffers.ContinuousActions;
+
+        /* Actions - And internal rewards*/
+        // Hole height , Always positive
+        height_m = Mathf.Abs(act[0]);
+        AddReward(-1f * Mathf.Min(act[0], 0));
+        height_std = act[1];
+
+        // Horizontal distance between consecutive holes
+        h_distance_m = Mathf.Abs(act[2]);
+        AddReward(-1f * Mathf.Min(act[2], 0)); // Penalizing when outputing negative
+        h_distance_std = act[3];
+
+        // Vertical difference between consecutive holes
+        v_difference_m = act[4];
+        v_difference_std = act[5];
+
+        // obstacle speed, Always positive
+        obst_speed = Mathf.Abs(act[6]); 
+        AddReward(-1f * Mathf.Min(act[6], 1)); // Penalizing when outputing negative
+    }
 
 }
