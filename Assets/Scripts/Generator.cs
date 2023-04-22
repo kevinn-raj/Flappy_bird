@@ -18,23 +18,32 @@ public class Generator : Agent
     //  minimum 1.5, Always positive
     public float height_m; //mean
     public float height_std; //standard deviation
-    const float height_min=1.5f;
+    float height_min=1.5f;
+    float height_max=9.5f;
+    float height_std_scale = 10f; // std = [-10, 10]
 
     // Horizontal distance between consecutive holes
     // minimum 1.12, Always Positive
     public float h_distance_m; //mean; 
     public float h_distance_std; //std
-    const float h_distance_min=1.12f;
+    float h_distance_min=1.12f;
+    float h_distance_max=10f;
+    float h_distance_std_scale = 10f; // std = [-10, 10]
 
     // Vertical difference between consecutive holes
     // The next minus previous
     // Can be negative
     public float v_difference_m; //mean
     public float v_difference_std; //std
+    float v_difference_min;
+    float v_difference_max;
+    float v_difference_std_scale = 10f; // std = [-10, 10]
 
     // obstacle speed, constant for an episode an same for every obstacle
     // Positive
     public float obst_speed;
+    float obst_speed_min = .1f;
+    float obst_speed_max = 10f;
 
     [Header("Parameters")]
     [Min(0)]
@@ -48,6 +57,9 @@ public class Generator : Agent
     float top_miny;
 
     bool fails = false; // Check if the generator has failed the constraints
+
+    [HideInInspector]
+    public List<GameObject> Obstacles_lst = new List<GameObject>();
 
     float GetRandom(float mean, float std){
         // mean = (max + min)/2
@@ -63,8 +75,12 @@ public class Generator : Agent
     }
 
     void Awake(){
+        // Initialize variables
         bottom_maxy = top_maxy - height_min;
         top_miny = bottom_miny + height_min;
+
+        v_difference_min = -height_max;
+        v_difference_max = height_max;
     }
 
     public override void CollectObservations(VectorSensor sensor){
@@ -94,6 +110,7 @@ public class Generator : Agent
 
             // Obstacle speed
             pipe.GetComponent<Obstacles>().speed = obst_speed;
+
         }
     }
 
@@ -136,6 +153,9 @@ public class Generator : Agent
                 AddReward(1f * (top.position.y - top_miny));
                 fails = true;
             }
+            else{ // + Reward for valid
+                AddReward(0.01f);
+            }
 
             Transform bottom = pipe.transform.Find("Bottom Pipe");
             if(bottom.position.y > bottom_maxy){
@@ -146,15 +166,38 @@ public class Generator : Agent
                 AddReward(1f * (bottom.position.y - bottom_miny));
                 fails = true;
             }
+            else{ // + Reward for valid
+                AddReward(0.01f);
+            }
+
+            // Add the created obstacle to the list of all generated obstacles
+            Obstacles_lst.Add(pipe);
         }
+
+    }
+    void FixedUpdate(){
         // After Creating the obstacles
         // End the generator episode if there was a fail
         // Do not continue the training, even for the solver if the generator has failed
-        // if(fails) EndEpisode();
+        if(fails) {
+            fails = false;
+            EndEpisode();
+        }
     }
 
     public override void OnEpisodeBegin(){
+        //  Delete previous created objects before creating new ones
+        foreach(GameObject o in Obstacles_lst){
+           Destroy(o.gameObject);
+           // Debug.Log("Destroying");
+        }
+        Obstacles_lst = new List<GameObject>();
+
         CreateWithAgent();
+    }
+
+    public override void Heuristic(in ActionBuffers actionsOut){
+        // CreateRandomly();
     }
 
     public override void OnActionReceived(ActionBuffers actionBuffers){
@@ -162,22 +205,24 @@ public class Generator : Agent
 
         /* Actions - And internal rewards*/
         // Hole height , Always positive
-        height_m = Mathf.Abs(act[0]);
-        AddReward(-1f * Mathf.Min(act[0], 0));
-        height_std = act[1];
+        height_m = ScaleAction(act[0], height_min, height_max); // at least height_min
+        AddReward(1f * Mathf.Min(act[0] - height_min, 0)); // Penalizing when outputing smaller than allowed
+        height_std = act[1] * height_std_scale; // [-height_std_scale, height_std_scale]
 
         // Horizontal distance between consecutive holes
-        h_distance_m = Mathf.Abs(act[2]);
-        AddReward(-1f * Mathf.Min(act[2], 0)); // Penalizing when outputing negative
-        h_distance_std = act[3];
+        h_distance_m = ScaleAction(act[2], h_distance_min, h_distance_max); // at least h_distance_min
+        AddReward(1f * Mathf.Min(act[2] - h_distance_min, 0)); // Penalizing when outputing smaller than allowed
+        h_distance_std = act[3] * h_distance_std_scale;
 
         // Vertical difference between consecutive holes
-        v_difference_m = act[4];
-        v_difference_std = act[5];
+        v_difference_m = ScaleAction(act[4], v_difference_min, v_difference_max);
+        v_difference_std = act[5] * v_difference_std_scale;
 
         // obstacle speed, Always positive
-        obst_speed = Mathf.Abs(act[6]); 
-        AddReward(-1f * Mathf.Min(act[6], 1)); // Penalizing when outputing negative
+        obst_speed = ScaleAction(act[6], obst_speed_min, obst_speed_max); //at least obst_speed_min
+        AddReward(1f * Mathf.Min(act[6] - obst_speed_min, 0)); // Penalizing when outputing negative
+
+        Debug.Log(act[0]);
     }
 
 }
