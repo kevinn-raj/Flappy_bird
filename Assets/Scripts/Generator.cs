@@ -13,41 +13,44 @@ public class Generator : Agent
     [Range(-1f,1f)]
     public float aux_input=1f;
 
-    public bool isRandom=false; // randomize on one episode or not
+    private bool isRandom=false; // randomize on one episode or not
     [Header("Generator actions")]
     // Hole height
     //  minimum 1.5, Always positive
-    public float height_m; //mean
-    public float height_std; //standard deviation
+    private float height_m; //mean
+    private float height_std; //standard deviation
     private float height_min=1.5f;
     private float height_max=9.5f;
     private float height_std_scale = 4.5f; // std = [0, 10]
 
     // Horizontal distance between consecutive holes
     // minimum 1.12, Always Positive
-    public float h_distance_m; //mean; 
-    public float h_distance_std; //std
-    private float h_distance_min=1.12f;
+    private float h_distance_m; //mean; 
+    private float h_distance_std; //std
+    private const float h_distance_min=1.12f;
     private float h_distance_max=7f;
     private float h_distance_std_scale = 5f; // std = [0, 10]
 
     // Vertical difference between consecutive holes
     // The next minus previous
     // Can be negative
-    public float v_difference_m; //mean
-    public float v_difference_std; //std
+    private float v_difference_m; //mean
+    private float v_difference_std; //std
     private float v_difference_min;
     private float v_difference_max;
     private float v_difference_std_scale = 4f; // std = [0, 10]
 
     // Actions variable
+    [SerializeField]
     private float nextTopY;
+    [SerializeField]
     private float nextBottomY;
-    private float nextHDistance;
+    [SerializeField]
+    private float nextHDistance=h_distance_min;
 
     // obstacle speed, constant for an episode an same for every obstacle
     // Positive
-    public float obst_speed = 3f;
+    private float obst_speed = 3f;
     private float obst_speed_min = .1f;
     private float obst_speed_max = 6f;
 
@@ -94,12 +97,51 @@ public class Generator : Agent
 
         v_difference_min = -height_max;
         v_difference_max = height_max;
+
+        // initialize it
+        previous = new List<float>(){transform.position.y - top_maxy, transform.position.y - bottom_miny, 0};
     }
 
+    public override void OnEpisodeBegin(){
+        //  Delete previous created objects before creating new ones
+        foreach(GameObject o in Obstacles_lst){
+           Destroy(o.gameObject);
+           // Debug.Log("Destroying");
+        }
+        Obstacles_lst = new List<GameObject>();
+
+        counter = 0;
+
+        // RequestDecision();
+
+        // To store the position of the previous obstacle, relative to the generator transform
+        previous = new List<float>(){transform.position.y - top_maxy, transform.position.y - bottom_miny, 0};
+        // Set the first hdistance
+        // nextHDistance=Random.Range(h_distance_min, h_distance_max);
+        RequestDecision();
+    }
     public override void CollectObservations(VectorSensor sensor){
         sensor.AddObservation(previous[0]); // top y
         sensor.AddObservation(previous[1]); // bottom y
         sensor.AddObservation(previous[2]); // top or bottom or parent x
+    }
+    public override void Heuristic(in ActionBuffers actionsOut){
+        // CreateRandomly();
+    }
+
+    public override void OnActionReceived(ActionBuffers actionBuffers){
+        var act = actionBuffers.ContinuousActions;
+        float randness = .1f; // Add some randomness
+        /* Actions - And internal rewards*/
+        // y position of the next top pipe, relative position
+        nextTopY = ScaleAction(act[0], top_miny, top_maxy) - Random.Range(0f, randness);
+
+        // y position of the next bottom pipe, relative position
+        nextBottomY = ScaleAction(act[1], bottom_miny, bottom_maxy) + Random.Range(0f, randness);
+
+        // Vertical difference between consecutive holes, relative position
+        nextHDistance = ScaleAction(act[2], h_distance_min, h_distance_max) + Random.Range(0f, randness);
+
     }
 
     // Generate Randomly Proceduraly
@@ -132,31 +174,14 @@ public class Generator : Agent
     // Generate with the Generator Agent
     public void CreateWithAgent(){
 
-        float valid_reward = .01f;
+        float valid_reward = .05f;
         float punishment = -.01f;
 
         if(counter < n_obstacles){
-            counter++;
-            RequestDecision(); 
-
-            Vector3 initPos = new Vector3(previous[2] + nextHDistance, transform.position.y, transform.position.z);
+            Vector3 initPos = new Vector3(transform.position.x - previous[2] + nextHDistance, transform.position.y, transform.position.z);
             // Instantiate the obstacle in the same position as previous
             GameObject pipe = Instantiate(prefab, initPos, Quaternion.identity);
 
-            /* Request the actions */
-            if(isRandom){ // Randomize the actions for an Episode
-            // Set height of the hole
-            pipe.GetComponent<Obstacles>().Distance = GetRandom(height_m, height_std);
-
-            // Vertical position difference, + or -
-            pipe.transform.position += Vector3.up * GetRandom(v_difference_m, v_difference_std); 
-
-            // Horizontal position, only to the right
-            pipe.transform.position += Vector3.right * GetRandom(h_distance_m, h_distance_std);
-            }else{
-            // Set height of the hole and manually set the position of the top and bottom one
-            pipe.GetComponent<Obstacles>().Distance = 0f;
-            }
 
             //  Debug
             // Debug.DrawLine(transform.position, previous);
@@ -169,9 +194,27 @@ public class Generator : Agent
             Transform top = pipe.transform.Find("Top Pipe");
             Transform bottom = pipe.transform.Find("Bottom Pipe");
 
-            // Position the top and bottom pipes
-            top.position = new Vector3(top.position.x, nextTopY, top.position.z);
-            bottom.position = new Vector3(bottom.position.x, nextBottomY, bottom.position.z);
+            // If it is not the first one
+            // if(counter != 0)
+            {
+            // Position the top and bottom pipes, absolute positions
+            top.position = new Vector3(top.position.x, nextTopY + transform.position.y, top.position.z);
+            bottom.position = new Vector3(bottom.position.x, nextBottomY + transform.position.y, bottom.position.z);
+                    }
+            // else{ // Randomly place if it the first one
+            // top.position = new Vector3(top.position.x,
+            //                      Random.Range(transform.position.y + height_min/2, top_maxy/4),
+            //                       top.position.z);
+            // bottom.position = new Vector3(bottom.position.x,
+            //                  Random.Range(transform.position.y - height_min/2, bottom_miny/4),
+            //                   bottom.position.z);
+            // // Next hdistance
+            // // nextHDistance=Random.Range(h_distance_min, h_distance_max);
+            // Debug.Log("First one");
+            // }
+            // Request decision after the changes
+            if(counter !=0) // Only if it is not the first
+                RequestDecision(); 
 
             // The difference must be at least height_min
             if(top.position.y - bottom.position.y >= height_min){
@@ -182,21 +225,24 @@ public class Generator : Agent
             // AddReward(1f * (top_maxy - top.position.y));
                 AddReward(punishment); // - reward
                 fails = true;
-            // EndEpisode();
+                // EndEpisode();
             }
 
             // Add the created obstacle to the list of all generated obstacles
             Obstacles_lst.Add(pipe);
 
             // Reassign the variable to the actual obstacle
-            previous[0] = top.position.y;
-            previous[1] = bottom.position.y;
-            previous[2] = pipe.transform.position.x;
+            // Relative position to the generator transform
+            previous[0] = transform.position.y - top.position.y;
+            previous[1] = transform.position.y - bottom.position.y;
+            previous[2] =  transform.position.x - top.transform.position.x;
+
+            counter++; // increment the counter
         }
 
     }
     
-    void Update(){
+    void FixedUpdate(){
         // After Creating the obstacles
         // End the generator episode if there was a fail
         // Do not continue the training, even for the solver if the generator has failed
@@ -210,39 +256,8 @@ public class Generator : Agent
             // if(counter == n_obstacles-1) EndEpisode();
     }
 
-    public override void OnEpisodeBegin(){
-        //  Delete previous created objects before creating new ones
-        foreach(GameObject o in Obstacles_lst){
-           Destroy(o.gameObject);
-           // Debug.Log("Destroying");
-        }
-        Obstacles_lst = new List<GameObject>();
 
-        counter = 0;
 
-        // To store the position of the previous obstacle
-        previous = new List<float>(){top_maxy, bottom_miny, transform.position.x};
-        // Set the first hdistance to 0
-        nextHDistance = 0;
-    }
-
-    public override void Heuristic(in ActionBuffers actionsOut){
-        // CreateRandomly();
-    }
-
-    public override void OnActionReceived(ActionBuffers actionBuffers){
-        var act = actionBuffers.ContinuousActions;
-
-        /* Actions - And internal rewards*/
-        // y position of the next top pipe
-        nextTopY = ScaleAction(act[0], top_miny, top_maxy);
-
-        // y position of the next bottom pipe
-        nextBottomY = ScaleAction(act[1], bottom_miny, bottom_maxy);
-
-        // Vertical difference between consecutive holes
-        nextHDistance = ScaleAction(act[2], h_distance_min, h_distance_max);
-
-    }
+    
 
 }

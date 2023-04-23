@@ -34,13 +34,13 @@ public class Obstacles : MonoBehaviour
     private void Start()
     {
         // Set the distance between the pipes
-        top.localPosition = new Vector3(top.localPosition.x, distance/2, top.localPosition.z);
-        bottom.localPosition = new Vector3(bottom.localPosition.x, -distance/2, bottom.localPosition.z);   
+        // top.localPosition = new Vector3(top.localPosition.x, distance/2, top.localPosition.z);
+        // bottom.localPosition = new Vector3(bottom.localPosition.x, -distance/2, bottom.localPosition.z);   
 
         // Set the size of the scoring zone accordingly
-        scoringZone.size = new Vector3(scoringZone.size.x,
-                                        distance,
-                                        scoringZone.size.z);
+        // scoringZone.size = new Vector3(scoringZone.size.x,
+        //                                 distance,
+        //                                 scoringZone.size.z);
 
         // leftEdge = spawner.GetComponent<Transform>().position.x - 12f;
     }
