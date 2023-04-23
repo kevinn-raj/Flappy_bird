@@ -1,5 +1,65 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!1 &48180938447135422
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 8053816348405687661}
+  - component: {fileID: 3292951037843023247}
+  m_Layer: 3
+  m_Name: RaySensor
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &8053816348405687661
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 48180938447135422}
+  m_LocalRotation: {x: 0, y: 0.7071068, z: 0, w: 0.7071068}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2699344111627665083}
+  m_RootOrder: -1
+  m_LocalEulerAnglesHint: {x: 0, y: 90, z: 0}
+--- !u!114 &3292951037843023247
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 48180938447135422}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6bb6b867a41448888c1cd4f99643ad71, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_SensorName: RayPerceptionSensor
+  m_DetectableTags:
+  - Obstacle
+  - Scoring
+  m_RaysPerDirection: 4
+  m_MaxRayDegrees: 98.46
+  m_SphereCastRadius: 0.1
+  m_RayLength: 16.3
+  m_RayLayerMask:
+    serializedVersion: 2
+    m_Bits: 4294967291
+  m_ObservationStacks: 1
+  rayHitColor: {r: 1, g: 0, b: 0, a: 1}
+  rayMissColor: {r: 1, g: 1, b: 1, a: 1}
+  m_StartVerticalOffset: 0
+  m_EndVerticalOffset: 0
 --- !u!1 &64485716271741749
 GameObject:
   m_ObjectHideFlags: 0
@@ -23,7 +83,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 64485716271741749}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -0.30495453, y: 0.36431122, z: -0.1302209}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -89,6 +149,70 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1, y: 0.7527957, z: 14.462156}
   m_Center: {x: 0, y: 0.025360346, z: 1.3895216}
+--- !u!1 &2845032264932166205
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6761153510166310864}
+  - component: {fileID: 1822231675107165531}
+  m_Layer: 3
+  m_Name: Grid
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 0
+--- !u!4 &6761153510166310864
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2845032264932166205}
+  m_LocalRotation: {x: 0, y: 0.7071068, z: 0, w: 0.7071068}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2699344111627665083}
+  m_RootOrder: -1
+  m_LocalEulerAnglesHint: {x: 0, y: 90, z: 0}
+--- !u!114 &1822231675107165531
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2845032264932166205}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2a501962d056745d1a30e99146ee39fe, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_SensorName: GridSensor
+  m_CellScale: {x: 1, y: 0.01, z: 1}
+  m_GridSize: {x: 16, y: 1, z: 16}
+  m_RotateWithAgent: 1
+  m_AgentGameObject: {fileID: 4897315722166938361}
+  m_DetectableTags:
+  - Obstacle
+  - Scoring
+  m_ColliderMask:
+    serializedVersion: 2
+    m_Bits: 64
+  m_MaxColliderBufferSize: 500
+  m_InitialColliderBufferSize: 4
+  m_DebugColors:
+  - {r: 0.9598806, g: 0.3027918, b: 0.0901458, a: 0}
+  - {r: 0.36035073, g: 0.35472232, b: 0.35472232, a: 0}
+  m_GizmoYOffset: 0
+  m_ShowGizmos: 1
+  m_CompressionType: 1
+  m_ObservationStacks: 1
 --- !u!1 &3243121552877487644
 GameObject:
   m_ObjectHideFlags: 0
@@ -141,7 +265,7 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 6.1679163, y: 17.705374, z: 6.2235928}
+  m_Size: {x: 6.1679163, y: 31.56284, z: 6.2235928}
   m_Center: {x: -7.1912007, y: -1.7565279, z: 0}
 --- !u!54 &2645445555894171275
 Rigidbody:
@@ -300,8 +424,7 @@ GameObject:
   - component: {fileID: 2699344111627665083}
   - component: {fileID: 8478051254275768391}
   - component: {fileID: 7828916637515453273}
-  - component: {fileID: 7214891902014914933}
-  - component: {fileID: 52793394942565357}
+  - component: {fileID: 1646501753793278467}
   - component: {fileID: 9204412741681559623}
   - component: {fileID: 85901394865069536}
   m_Layer: 3
@@ -310,7 +433,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &2699344111627665083
 Transform:
   m_ObjectHideFlags: 0
@@ -324,6 +447,8 @@ Transform:
   m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 6421579889265728065}
+  - {fileID: 8053816348405687661}
+  - {fileID: 6761153510166310864}
   m_Father: {fileID: 7453529134438445174}
   m_RootOrder: -1
   m_LocalEulerAnglesHint: {x: -90, y: 0, z: 0}
@@ -375,7 +500,7 @@ SphereCollider:
   serializedVersion: 3
   m_Radius: 0.25
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &7214891902014914933
+--- !u!114 &1646501753793278467
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -384,7 +509,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 4897315722166938361}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 780ba3da9561d166ca9c85cd0672c9b1, type: 3}
+  m_Script: {fileID: 11500000, guid: d370daf88ad0c993e8caefe0655ed7fe, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   agentParameters:
@@ -392,38 +517,22 @@ MonoBehaviour:
   hasUpgradedFromAgentParameters: 1
   MaxStep: 0
   isTraining: 1
-  jumpForce: 0
+  jumpForce: 1.5
   jumpKey: 
   JUMP_TIME_WINDOW: 0.01
-  gravity_multiplier: 1
+  gravity_multiplier: 0.6
   rBody: {fileID: 0}
   score: 0
   maxScore: 0
-  ground: {fileID: 0}
-  roof: {fileID: 0}
-  Pipe_spawner: {fileID: 0}
+  ground: {fileID: 4201923837698264935}
+  roof: {fileID: 511314780728656572}
+  Generator: {fileID: 8270742806436092094}
   target_numbers: 2
   targets:
   - {fileID: 0}
   - {fileID: 0}
   useObs: 1
   isDebug: 1
---- !u!114 &52793394942565357
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4897315722166938361}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 88b6042bc9a5d4aa58d931eae49442e5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  agentParameters:
-    maxStep: 0
-  hasUpgradedFromAgentParameters: 1
-  MaxStep: 0
 --- !u!114 &9204412741681559623
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -437,7 +546,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_BrainParameters:
-    VectorObservationSize: 0
+    VectorObservationSize: 3
     NumStackedVectorObservations: 1
     m_ActionSpec:
       m_NumContinuousActions: 0
@@ -449,9 +558,9 @@ MonoBehaviour:
   m_Model: {fileID: 0}
   m_InferenceDevice: 0
   m_BehaviorType: 0
-  m_BehaviorName: FlappyBird
+  m_BehaviorName: Solver
   TeamId: 0
-  m_UseChildSensors: 0
+  m_UseChildSensors: 1
   m_UseChildActuators: 1
   m_ObservableAttributeHandling: 0
 --- !u!114 &85901394865069536
@@ -616,13 +725,9 @@ MonoBehaviour:
   hasUpgradedFromAgentParameters: 1
   MaxStep: 0
   aux_input: -1
-  isRandom: 0
-  height_m: 3
-  height_std: 1.5
-  h_distance_m: 3
-  h_distance_std: 1
-  v_difference_m: 0
-  v_difference_std: 0
+  nextTopY: 0
+  nextBottomY: 0
+  nextHDistance: 1.12
   n_obstacles: 10
   prefab: {fileID: 413873640207726821, guid: 786a252b194e6be878352bdde8f83fcc, type: 3}
   Obstacles_lst: []
@@ -648,9 +753,9 @@ MonoBehaviour:
     VectorActionDescriptions: []
     VectorActionSpaceType: 1
     hasUpgradedBrainParametersWithActionSpec: 1
-  m_Model: {fileID: 0}
+  m_Model: {fileID: 5022602860645237092, guid: d88097ccc32492dbf84199f83b686659, type: 3}
   m_InferenceDevice: 0
-  m_BehaviorType: 0
+  m_BehaviorType: 2
   m_BehaviorName: Generator
   TeamId: 0
   m_UseChildSensors: 0

@@ -9,274 +9,275 @@ using Random = UnityEngine.Random;
 
 public class Solver : Agent
 {
-    // public bool isTraining = true;
-    // [SerializeField] private float jumpForce;
-    // [SerializeField] private string jumpKey;
+    public bool isTraining = true;
+    [SerializeField] private float jumpForce=1.5f;
+    [SerializeField] private string jumpKey;
     
-    // // Jump is available or not
-    // // private bool jumpIsReady = true;
-    // [SerializeField]
-    // private float JUMP_TIME_WINDOW = .01f; // in seconds // Cannot jump twice within that time
-    // private float lastJump; // Time of the last jump
+    // Jump is available or not
+    // private bool jumpIsReady = true;
+    [SerializeField]
+    private float JUMP_TIME_WINDOW = .1f; // in seconds // Cannot jump twice within that time
+    private float lastJump; // Time of the last jump
 
-    // public float gravity_multiplier = 1f;
+    public float gravity_multiplier = .6f;
 
-    // private float XMAX = 6;
-    // private float YMAX = 6;
-    // private float ZMAX = 6;
+    private float XMAX = 6;
+    private float YMAX = 6;
+    private float ZMAX = 6;
 
-    // public Rigidbody rBody;
-    // private Vector3 startingPosition;
-    // [SerializeField]
-    // public int score = 0;
-    // [SerializeField]
-    // public  int maxScore = 0;
+    public Rigidbody rBody;
+    private Vector3 startingPosition;
+    [SerializeField]
+    public int score = 0;
+    [SerializeField]
+    public  int maxScore = 0;
 
-    // public GameObject ground;
-    // public GameObject roof;
-    // public GameObject Generator;       // Fetch the Generator object
-    // // public List<GameObject> pipes;
+    public GameObject ground;
+    public GameObject roof;
+    public GameObject Generator;       // Fetch the Generator object
 
-    // // To store the next target  (the score triggers), the element will be replaced by the next score trigger,
-    // // whenever the player hits its trigger
-    // [SerializeField]
-    // [Range(1,2)]
-    // private int target_numbers = 2; // Number of target the agent can see
-    // [SerializeField]
-    // // private GameObject target=null; 
-    // private GameObject[] targets = new GameObject[2]; // this target array has always 2 elements
-    
-
-    // public bool useObs = true;
-
-
-    // public event Action OnReset;
-
-    // EnvironmentParameters m_ResetParams;
-
-    // [Header("Debugs")]
-    // [SerializeField]
-    // private bool isDebug = true;
+    // To store the next target  (the score triggers), the element will be replaced by the next score trigger,
+    // whenever the player hits its trigger
+    [SerializeField]
+    [Range(1,2)]
+    private int target_numbers = 2; // Number of target the agent can see
+    [SerializeField]
+    // private GameObject target=null; 
+    private GameObject[] targets = new GameObject[2]; // this target array has always 2 elements
     
 
-    // public override void Initialize(){
-    //     rBody = GetComponent<Rigidbody>();
-    //     startingPosition = transform.position;
-    //     lastJump = Time.time;
+    public bool useObs = true;
 
-    //     m_ResetParams = Academy.Instance.EnvironmentParameters;
-    // }
 
-    // public override void CollectObservations(VectorSensor sensor)
-    // {
-    //     if(useObs){
-    //         // fetch the max Y of the ground
-    //         float groundMaxY = ground.GetComponent<Collider>().bounds.max.y;
-    //         // Set the vertical distance from the ground as observation
-    //         sensor.AddObservation(Mathf.Abs(groundMaxY - transform.position.y));
+    public event Action OnReset;
 
-    //         // fetch the min Y of the roof
-    //         float roofMinY = roof.GetComponent<Collider>().bounds.min.y;
-    //         //Set the vertical distance from the roof as observation
-    //         sensor.AddObservation(Mathf.Abs(roofMinY - transform.position.y));
+    EnvironmentParameters m_ResetParams;
 
-    //     // Add each target as observation    
-    //     // Only add the first target_numbers-th element as observation
-    //     for(int i=0; i<target_numbers; i++){  
-    //         GameObject target = targets[i];
-    //     // Get the scoring Triggers
-    //         //// If the target is not null
-    //         if(target){
-    //             /* Observations */
-    //             var scoreColl = target.GetComponent<BoxCollider>();
-    //             // x coordinate of The Left 
-    //             sensor.AddObservation(scoreColl.bounds.min.x - transform.position.x);
-    //             // y coordinate of the Bottom
-    //             sensor.AddObservation(scoreColl.bounds.min.y - transform.position.y);
-    //             // y coordinate of the Top
-    //             sensor.AddObservation(scoreColl.bounds.max.y - transform.position.y);
+    [Header("Debugs")]
+    [SerializeField]
+    private bool isDebug = true;
+    
 
-    //         }
-    //         else{
-    //         // If no pipe is spawned yet, then suppose the pipe is far away
-    //         // The number of observation must always be the same
-    //             // x coordinate of The Left      
-    //             sensor.AddObservation(2);
-    //             // y coordinate of the Bottom
-    //             sensor.AddObservation(-2);
-    //             // y coordinate of the Top
-    //             sensor.AddObservation(2);
-    //              }
-    //      }
+    public override void Initialize(){
+        rBody = GetComponent<Rigidbody>();
+        startingPosition = transform.position;
+        lastJump = Time.time;
+
+        m_ResetParams = Academy.Instance.EnvironmentParameters;
+    }
+
+    public override void CollectObservations(VectorSensor sensor)
+    {
+        if(useObs){
+            // fetch the max Y of the ground
+            float groundMaxY = ground.GetComponent<Collider>().bounds.max.y;
+            // Set the vertical distance from the ground as observation
+            sensor.AddObservation(Mathf.Abs(groundMaxY - transform.position.y));
+
+            // fetch the min Y of the roof
+            float roofMinY = roof.GetComponent<Collider>().bounds.min.y;
+            //Set the vertical distance from the roof as observation
+            sensor.AddObservation(Mathf.Abs(roofMinY - transform.position.y));
+
+        // Add each target as observation    
+        // Only add the first target_numbers-th element as observation
+        // for(int i=0; i<target_numbers; i++){  
+        //     GameObject target = targets[i];
+        // // Get the scoring Triggers
+        //     //// If the target is not null
+        //     if(target){
+        //         /* Observations */
+        //         var scoreColl = target.GetComponent<BoxCollider>();
+        //         // x coordinate of The Left 
+        //         sensor.AddObservation(scoreColl.bounds.min.x - transform.position.x);
+        //         // y coordinate of the Bottom
+        //         sensor.AddObservation(scoreColl.bounds.min.y - transform.position.y);
+        //         // y coordinate of the Top
+        //         sensor.AddObservation(scoreColl.bounds.max.y - transform.position.y);
+
+        //     }
+        //     else{
+        //     // If no pipe is spawned yet, then suppose the pipe is far away
+        //     // The number of observation must always be the same
+        //         // x coordinate of The Left      
+        //         sensor.AddObservation(2);
+        //         // y coordinate of the Bottom
+        //         sensor.AddObservation(-2);
+        //         // y coordinate of the Top
+        //         sensor.AddObservation(2);
+        //          }
+        //  }
              
-    //     // velocity Y
-    //     sensor.AddObservation(rBody.velocity.y);
-    //     }
-    // }
+        // velocity Y
+        sensor.AddObservation(rBody.velocity.y);
+        }
+    }
 
-    // // Get the gameobject of the scoring collider
-    // public GameObject GetScoringZone(GameObject parentPipe){
-    //     return parentPipe.transform.Find("Scoring Zone").gameObject;
-    // }
+    // Get the gameobject of the scoring collider
+    public GameObject GetScoringZone(GameObject parentPipe){
+        return parentPipe.transform.Find("Scoring Zone").gameObject;
+    }
 
-    // public override void OnActionReceived(ActionBuffers actionBuffers){
-    //     var act = actionBuffers.DiscreteActions;
+    public override void OnActionReceived(ActionBuffers actionBuffers){
+        var act = actionBuffers.DiscreteActions;
 
-    //     // Action 0 = 0 : Nothing, 1 : Jump
-    //     if(act[0] == 1){
-    //         Jump();
-    //     }
+        // Action 0 = 0 : Nothing, 1 : Jump
+        if(act[0] == 1){
+            Jump();
+        }
 
 
-    // }
+    }
  
-    // //  Controlled by the user
-    // public override void Heuristic(in ActionBuffers actionsOut){
+    //  Controlled by the user
+    public override void Heuristic(in ActionBuffers actionsOut){
 
-    //     // Get the discrete action
-    //     var act = actionsOut.DiscreteActions;
+        // Get the discrete action
+        var act = actionsOut.DiscreteActions;
 
-    //     // Action = 0 : Nothing, 1 : Jump
-    //     act[0] = Convert.ToInt16(Input.GetButton("Jump"));
+        // Action = 0 : Nothing, 1 : Jump
+        act[0] = Convert.ToInt16(Input.GetButton("Jump"));
 
-    // }
+    }
 
-    // private void Jump()
-    // {
-    //     if (Time.time > JUMP_TIME_WINDOW + lastJump)
-    //     {
-    //         // velocity to zero before jump
-    //         rBody.velocity = Vector3.zero;
-    //         rBody.AddForce(new Vector3(0, jumpForce, 0), ForceMode.Impulse);
+    private void Jump()
+    {
+        if (Time.time > JUMP_TIME_WINDOW + lastJump)
+        {
+            // velocity to zero before jump
+            rBody.velocity = Vector3.zero;
+            rBody.AddForce(new Vector3(0, jumpForce, 0), ForceMode.Impulse);
 
-    //         lastJump = Time.time;
-    //     }
-    // }
+            lastJump = Time.time;
+        }
+    }
 
-    // public override void OnEpisodeBegin(){
-    //     // Reset the Pipe spawner GameObject
-    //     Generator.SetActive(true);
-    //     // Reset
-    //     Reset();
+    public override void OnEpisodeBegin(){
+        // Reset
+        Reset();
 
-    // }
+    }
 
-    // public void Update(){
-    //     // Constraints
-    //     float x = Mathf.Clamp(transform.localPosition.x, -XMAX, XMAX);
-    //     float y = Mathf.Clamp(transform.localPosition.y, -YMAX, YMAX);
-    //     float z = Mathf.Clamp(transform.localPosition.z, -ZMAX, ZMAX);
+    public void Update(){
+        // Constraints on local coordinate
+        float x = Mathf.Clamp(transform.localPosition.x, -XMAX, XMAX);
+        float y = Mathf.Clamp(transform.localPosition.y, -YMAX, YMAX);
+        float z = Mathf.Clamp(transform.localPosition.z, -ZMAX, ZMAX);
 
-    //     transform.localPosition = new Vector3(x, y, z);
+        transform.localPosition = new Vector3(x, y, z);
 
 
-    // }
+    }
 
-    // public void FixedUpdate(){
+    public void FixedUpdate(){
         
-    //     // Add custom gravity force 
-    //     rBody.AddForce(Physics.gravity * gravity_multiplier);
-    //     Debug.Log(rBody);
-
-    // }
-    // public void LateUpdate(){
+        // Add custom gravity force 
+        rBody.AddForce(Physics.gravity * gravity_multiplier);
+    }
+    public void LateUpdate(){
         
-    //      /* Update the target */
-    //     List<GameObject> pipes = Generator.GetComponent<Generator>().pipes_spawned;        
-    //     if(pipes.Count != 0) // The pipes is not empty
-    //     {    
-    //         for(int i=0; i<pipes.Count; i++){
-    //             // Distance from the player
-    //             float pos = pipes[i].transform.position.x;
+         /* Update the target */
+        List<GameObject> pipes = Generator.GetComponent<Generator>().Obstacles_lst;        
+        // if(pipes.Count != 0) // The pipes is not empty
+        // {    
+        //     for(int i=0; i<pipes.Count; i++){
+        //         // Distance from the player
+        //         float pos = pipes[i].transform.position.x;
 
-    //             // The first pipe in front of the player
-    //             if(pos - transform.position.x >= 0 ){
-    //                 // target = GetScoringZone(pipes[i]);
-    //                 targets[0] = GetScoringZone(pipes[i]); // 1st target
-    //                 // 2nd target
-    //                 if(i+1 < pipes.Count) targets[1] = GetScoringZone(pipes[i+1]);
-    //                 else targets[1] = null;
-    //                 break;  // Forget the remaining elements after finding the right one
-    //              }     
-    //         }
-    //     }
-    //     else{ // If it is empty
-    //         // target = null; 
-    //         for(int i=0; i<targets.Length; i++) 
-    //             targets[i] = null;
-    //     }
+        //         // The first pipe in front of the player
+        //         if(pos - transform.position.x >= 0 ){
+        //             // target = GetScoringZone(pipes[i]);
+        //             targets[0] = GetScoringZone(pipes[i]); // 1st target
+        //             // 2nd target
+        //             if(i+1 < pipes.Count) targets[1] = GetScoringZone(pipes[i+1]);
+        //             else targets[1] = null;
+        //             break;  // Forget the remaining elements after finding the right one
+        //          }     
+        //     }
+        // }
+        // else{ // If it is empty
+        //     // target = null; 
+        //     for(int i=0; i<targets.Length; i++) 
+        //         targets[i] = null;
+        // }
 
-    //    /* Debugs */
-    //     if(isDebug){
-    //         // For the targets
-    //         foreach(GameObject target in targets){
-    //             if(target != null){ // Rays from player to the score target
-    //                 Debug.DrawLine(transform.position, target.transform.position, Color.red);
-    //                 var bounds = target.GetComponent<BoxCollider>().bounds;
-    //                 Debug.DrawLine(transform.position,
-    //                                 bounds.min,
-    //                                   Color.red);
-    //                 Debug.DrawLine(transform.position,
-    //                                 new Vector3(bounds.min.x, bounds.max.y, 0),
-    //                                   Color.red);
-    //                 }   
-    //         }
+       /* Debugs */
+        if(isDebug){
+            // For the targets
+            // foreach(GameObject target in targets){
+            //     if(target != null){ // Rays from player to the score target
+            //         Debug.DrawLine(transform.position, target.transform.position, Color.red);
+            //         var bounds = target.GetComponent<BoxCollider>().bounds;
+            //         Debug.DrawLine(transform.position,
+            //                         bounds.min,
+            //                           Color.red);
+            //         Debug.DrawLine(transform.position,
+            //                         new Vector3(bounds.min.x, bounds.max.y, 0),
+            //                           Color.red);
+            //         }   
+            // }
 
-    //     // For the roof and the ground    
-    //     // fetch the max Y of the ground
-    //     float groundMaxY = ground.GetComponent<Collider>().bounds.max.y;
-    //    Debug.DrawLine(transform.position,
-    //              new Vector3(transform.position.x, groundMaxY, transform.position.z));
+        // For the roof and the ground    
+        // fetch the max Y of the ground
+        float groundMaxY = ground.GetComponent<Collider>().bounds.max.y;
+       Debug.DrawLine(transform.position,
+                 new Vector3(transform.position.x, groundMaxY, transform.position.z));
 
-    //     // fetch the min Y of the roof
-    //     float roofMinY = roof.GetComponent<Collider>().bounds.min.y;
-    //      Debug.DrawLine(transform.position,
-    //              new Vector3(transform.position.x, roofMinY, transform.position.z), Color.blue);
-    //     }   
-    // }
+        // fetch the min Y of the roof
+        float roofMinY = roof.GetComponent<Collider>().bounds.min.y;
+         Debug.DrawLine(transform.position,
+                 new Vector3(transform.position.x, roofMinY, transform.position.z), Color.blue);
+        }   
+    }
 
-    // private void Reset()
-    // {
-    //     score = 0;
+    private void Reset()
+    {
+        score = 0;
         
-    //     //Reset Movement and Position
-    //     transform.position = startingPosition;
-    //     rBody.velocity = Vector3.zero;
+        //Reset Movement and Position
+        transform.position = startingPosition;
+        rBody.velocity = Vector3.zero;
         
-    //     OnReset?.Invoke();
-    // }
+        OnReset?.Invoke();
+    }
 
-    // private void OnCollisionEnter(Collision collidedObj)
-    // {  
-    // }
+    private void OnCollisionEnter(Collision collidedObj)
+    {  
+    }
 
-    // private void OnTriggerEnter(Collider collidedObj)
-    // {      
-    //     // Loooooose
-    //     if (collidedObj.gameObject.CompareTag("Obstacle"))
-    //         {
-    //             SetReward(-1);
-    //             // Debug.Log(GetCumulativeReward());
-    //             // Reset the spawner, delete all the instances
-    //             Generator.GetComponent<Generator>().Reset();
-    //             Generator.SetActive(false); // Disable the Pipe spawner GameObject
-    //             EndEpisode();
-    //         }
-    //     // SCOREEEEEEEEEEEEE!
-    //     else if (collidedObj.gameObject.CompareTag("Scoring"))
-    //     {
-    //         score++;
-    //         maxScore = Mathf.Max(score, maxScore);
-    //         // ScoreCollector.Instance.AddScore(score);
-    //         AddReward(.1f);
+    private void OnTriggerEnter(Collider collidedObj)
+    {      
+        // Loooooose
+        if (collidedObj.gameObject.CompareTag("Obstacle"))
+            {
+                SetReward(-1);
+                // End the episode of the Generator and the solver
+                Generator.GetComponent<Generator>().EndEpisode();
+                EndEpisode();
+            }
+        // SCOREEEEEEEEEEEEE!
+        else if (collidedObj.gameObject.CompareTag("Scoring"))
+        {
+            score++;
+            maxScore = Mathf.Max(score, maxScore);
+            AddReward(.1f);
 
-    //         // Goal reached
-    //         if(score == 10) {
-    //             SetReward(1);
-    //             // only end the episode on training
-    //             if(isTraining)
-    //                 EndEpisode();
-    //         }
-    //     }
-    // }
+            // Goal reached
+            if(score == 10) {
+                SetReward(1);
+                // only end the episode on training
+                if(isTraining){
+
+                float aux = Generator.GetComponent<Generator>().aux_input;
+                float solver_value = GetCumulativeReward();
+                float generator_reward = solver_value * aux;
+                // End the episode of the Generator and the solver
+                Generator.GetComponent<Generator>().AddReward(generator_reward);
+                Generator.GetComponent<Generator>().EndEpisode();
+
+                    EndEpisode();
+                }
+            }
+        }
+    }
 }

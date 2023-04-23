@@ -225,7 +225,9 @@ public class Generator : Agent
             // AddReward(1f * (top_maxy - top.position.y));
                 AddReward(punishment); // - reward
                 fails = true;
-                // EndEpisode();
+                // Reset the episode after mistakes or not
+                // Comment the following line if not
+                EndEpisode();
             }
 
             // Add the created obstacle to the list of all generated obstacles
