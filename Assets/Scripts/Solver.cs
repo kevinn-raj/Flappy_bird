@@ -173,6 +173,9 @@ public class Solver : Agent
         
         // Add custom gravity force 
         rBody.AddForce(Physics.gravity * gravity_multiplier);
+
+        AddReward(0.001f); // To motivate to fly
+
     }
     public void LateUpdate(){
         
@@ -251,7 +254,12 @@ public class Solver : Agent
         if (collidedObj.gameObject.CompareTag("Obstacle"))
             {
                 SetReward(-1);
+                // Reward the Generator 
+                float aux = Generator.GetComponent<Generator>().aux_input;
+                float solver_value = GetCumulativeReward();
+                float generator_reward = solver_value * aux;
                 // End the episode of the Generator and the solver
+                Generator.GetComponent<Generator>().AddReward(generator_reward);
                 Generator.GetComponent<Generator>().EndEpisode();
                 EndEpisode();
             }
@@ -263,8 +271,8 @@ public class Solver : Agent
             AddReward(.1f);
 
             // Goal reached
-            if(score == 10) {
-                SetReward(1);
+            if(score >= 10) {
+                AddReward(1);
                 // only end the episode on training
                 if(isTraining){
 
