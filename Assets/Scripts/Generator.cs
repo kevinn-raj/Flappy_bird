@@ -9,6 +9,7 @@ using Random = UnityEngine.Random;
 
 public class Generator : Agent
 {
+    public Solver solver;
     [Header("Auxiliary Input")]
     public bool randomizeAuxInput = true;
     [Range(-1f,1f)]
@@ -58,6 +59,8 @@ public class Generator : Agent
     /* Observations */
     // Previous obstacle's position
     private List<float> previous = new List<float>();
+    private GameObject prevPipe;
+    private GameObject pipe;
 
 
     [Header("Parameters")]
@@ -72,6 +75,9 @@ public class Generator : Agent
     float top_miny;
 
     private bool fails = false; // Check if the generator has failed the constraints
+    public bool latestAchieved=true;
+
+
 
     [HideInInspector]
     public List<GameObject> Obstacles_lst = new List<GameObject>();
@@ -101,6 +107,12 @@ public class Generator : Agent
 
         // initialize it
         previous = new List<float>(){transform.position.y - top_maxy, transform.position.y - bottom_miny, 0};
+        prevPipe = gameObject;
+
+        latestAchieved = true; // otherwise no obstacle will be generated
+
+        // initialize the solver variable
+        solver = transform.parent.GetComponentInChildren<Solver>();
     }
 
     public override void OnEpisodeBegin(){
@@ -117,14 +129,15 @@ public class Generator : Agent
 
         // To store the position of the previous obstacle, relative to the generator transform
         previous = new List<float>(){transform.position.y - top_maxy, transform.position.y - bottom_miny, 0};
-        
+        prevPipe = gameObject;
+        pipe = gameObject;
         
         if(randomizeAuxInput) aux_input = Random.Range(-1f, 1f);
         
         // Set the first hdistance
         // nextHDistance=Random.Range(h_distance_min, h_distance_max);
         RequestDecision();
-
+        latestAchieved = true;
         
     }
     public override void CollectObservations(VectorSensor sensor){
@@ -152,113 +165,6 @@ public class Generator : Agent
 
     }
 
-    // Generate Randomly Proceduraly
-    /*public void CreateRandomly(){
-        // To store the position of the previous obstacle
-         previous = new List<float>(){top_maxy, bottom_miny}; // 
-
-        for(int i=0; i<n_obstacles; i++){
-            // Instantiate the obstacle in the same position as previous
-            GameObject pipe = Instantiate(prefab, previous, Quaternion.identity);
-
-            // Set height of the hole
-            pipe.GetComponent<Obstacles>().Distance = GetRandom(height_m, height_std);
-
-            // Vertical position difference, + or -
-            pipe.transform.position += Vector3.up * GetRandom(v_difference_m, v_difference_std); 
-
-            // Horizontal position, only to the right
-            pipe.transform.position += Vector3.right * GetRandom(h_distance_m, h_distance_std);
-
-            // Reassign the variable to the actual obstacle
-            previous = pipe.transform.position;
-
-            // Obstacle speed
-            pipe.GetComponent<Obstacles>().speed = obst_speed;
-
-        }
-    }*/
-
-    // Generate with the Generator Agent
-    public void CreateWithAgent(){
-
-        float valid_reward = .05f;
-        float punishment = -.01f;
-
-        if(counter <= n_obstacles){
-            Vector3 initPos = new Vector3(transform.position.x - previous[2] + nextHDistance, transform.position.y, transform.position.z);
-            // Instantiate the obstacle in the same position as previous
-            GameObject pipe = Instantiate(prefab, initPos, Quaternion.identity);
-	    //Debug.Log(pipe);
-
-            //  Debug
-            // Debug.DrawLine(transform.position, previous);
-
-            // Obstacle speed
-            pipe.GetComponent<Obstacles>().speed = obst_speed;
-
-            /* Constraints - Rewarding the Generator*/
-            // Internal Reward
-            Transform top = pipe.transform.Find("Top Pipe");
-            Transform bottom = pipe.transform.Find("Bottom Pipe");
-
-            // If it is not the first one
-            // if(counter != 0)
-            {
-            // Position the top and bottom pipes, absolute positions
-            top.position = new Vector3(top.position.x, nextTopY + transform.position.y, top.position.z);
-            bottom.position = new Vector3(bottom.position.x, nextBottomY + transform.position.y, bottom.position.z);
-                    }
-            // else{ // Randomly place if it the first one
-            // top.position = new Vector3(top.position.x,
-            //                      Random.Range(transform.position.y + height_min/2, top_maxy/4),
-            //                       top.position.z);
-            // bottom.position = new Vector3(bottom.position.x,
-            //                  Random.Range(transform.position.y - height_min/2, bottom_miny/4),
-            //                   bottom.position.z);
-            // // Next hdistance
-            // // nextHDistance=Random.Range(h_distance_min, h_distance_max);
-            // Debug.Log("First one");
-            // }
-            // Request decision after the changes
-            if(counter !=0) // Only if it is not the first
-                RequestDecision(); 
-                
-             // Add the created obstacle to the list of all generated obstacles
-            Obstacles_lst.Add(pipe);
-
-
-
-            // The difference must be at least height_min and at most height_max
-            if(top.position.y - bottom.position.y >= height_min && top.position.y - bottom.position.y 
-                <= height_max){
-                // + reward
-                AddReward(valid_reward);
-            }else{
-            // Penalize proportionnally to the mistake
-            // AddReward(1f * (top_maxy - top.position.y));
-                AddReward(punishment); // - reward
-                fails = true;
-                // Reset the variable previous
-                //previous = new List<float>(){transform.position.y - top_maxy, transform.position.y - bottom_miny, 0};
-                // Reset the episode after mistakes or not
-                // Comment the following line if not
-               EndEpisode();
-            }
-
-           
-	    // Reassign the variable to the actual obstacle
-            // Relative position to the generator transform
-            previous[0] = transform.position.y - top.position.y;
-            previous[1] = transform.position.y - bottom.position.y;
-            previous[2] =  transform.position.x - top.transform.position.x;
-            
-            counter++; // increment the counter
-            //Debug.Log(counter);
-        }
-
-    }
-    
     void FixedUpdate(){
         // After Creating the obstacles
         // End the generator episode if there was a fail
@@ -274,7 +180,94 @@ public class Generator : Agent
     }
 
 
+    // Generate with the Generator Agent
+    public void CreateWithAgent(){
+
+        float valid_reward = .05f;
+        float punishment = -.01f;
+
+        if(counter <= n_obstacles && latestAchieved){
+            Transform top, bottom;
+            Vector3 initPos;
+
+            if(counter ==0){ // place randomly the first one
+                float randHeight = Random.Range(height_min, height_max);
+                float yposTop = Random.Range(top_maxy, top_miny+randHeight);
+                float yposBot = yposTop-randHeight;
+                initPos = transform.position;
+
+                pipe = Instantiate(prefab, initPos, Quaternion.identity);
+                pipe.GetComponent<Obstacles>().speed = obst_speed;
+                top = pipe.transform.Find("Top Pipe");
+                bottom = pipe.transform.Find("Bottom Pipe");    
+
+                // Position the top and bottom pipes, absolute positions
+                top.position = new Vector3(top.position.x, yposTop + transform.position.y, top.position.z);
+                bottom.position = new Vector3(bottom.position.x, yposBot + transform.position.y, bottom.position.z);
+            }
+            else{
+            initPos = new Vector3(prevPipe.transform.position.x + nextHDistance, transform.position.y, transform.position.z);
+                    // Instantiate the obstacle in the same position as previous
+                    pipe = Instantiate(prefab, initPos, Quaternion.identity);
+                //Debug.Log(pipe);
+        
+                    //  Debug
+                    // Debug.DrawLine(transform.position, previous);
+        
+                    // Obstacle speed
+                    pipe.GetComponent<Obstacles>().speed = obst_speed;
+        
+                    /* Constraints - Rewarding the Generator*/
+                    // Internal Reward
+                    top = pipe.transform.Find("Top Pipe");
+                    bottom = pipe.transform.Find("Bottom Pipe");
+        
+                    // If it is not the first one
+                    // if(counter != 0)
+        
+                    // Position the top and bottom pipes, absolute positions
+                    top.position = new Vector3(top.position.x, nextTopY + transform.position.y, top.position.z);
+                    bottom.position = new Vector3(bottom.position.x, nextBottomY + transform.position.y, bottom.position.z);
+            }
+                // Request decision after the changes
+                    RequestDecision(); 
+                        
+                 // Add the created obstacle to the list of all generated obstacles
+                Obstacles_lst.Add(pipe);
+        
+                // REWARD-The difference must be at least height_min and at most height_max
+                if((top.position.y - bottom.position.y >= height_min) && (top.position.y - bottom.position.y  <= height_max)){
+                    // + reward
+                    AddReward(valid_reward);
+                    // Debug.Log("Valid");
+                }else{  
+                    AddReward(punishment); // - reward
+                    fails = true;
+                    // Reset the episode after mistakes or not
+                    // Comment the following line if not
+                   // EndEpisode();
+                }
+            
+           
+	    // Reassign the variable to the actual obstacle
+            // Relative position to the generator transform
+            previous[0] = transform.position.y - top.position.y;
+            previous[1] = transform.position.y - bottom.position.y;
+            previous[2] =  transform.position.x - top.transform.position.x;
+            
+            counter++; // increment the counter
+            //Debug.Log(counter);
+            latestAchieved = false;
+            prevPipe = pipe;
+
+        }
+    }
+
+}
+
+
+
+
 
     
 
-}

@@ -146,7 +146,8 @@ public class Solver : Agent
         {
             // velocity to zero before jump
             rBody.velocity = Vector3.zero;
-            rBody.AddForce(new Vector3(0, jumpForce, 0), ForceMode.Impulse);
+            // rBody.AddForce(new Vector3(0, jumpForce, 0), ForceMode.VelocityChange);
+            rBody.velocity = new Vector3(0, jumpForce, 0);
 
             lastJump = Time.time;
         }
@@ -181,44 +182,10 @@ public class Solver : Agent
         
          /* Update the target */
         List<GameObject> pipes = Generator.GetComponent<Generator>().Obstacles_lst;        
-        // if(pipes.Count != 0) // The pipes is not empty
-        // {    
-        //     for(int i=0; i<pipes.Count; i++){
-        //         // Distance from the player
-        //         float pos = pipes[i].transform.position.x;
-
-        //         // The first pipe in front of the player
-        //         if(pos - transform.position.x >= 0 ){
-        //             // target = GetScoringZone(pipes[i]);
-        //             targets[0] = GetScoringZone(pipes[i]); // 1st target
-        //             // 2nd target
-        //             if(i+1 < pipes.Count) targets[1] = GetScoringZone(pipes[i+1]);
-        //             else targets[1] = null;
-        //             break;  // Forget the remaining elements after finding the right one
-        //          }     
-        //     }
-        // }
-        // else{ // If it is empty
-        //     // target = null; 
-        //     for(int i=0; i<targets.Length; i++) 
-        //         targets[i] = null;
-        // }
+ 
 
        /* Debugs */
         if(isDebug){
-            // For the targets
-            // foreach(GameObject target in targets){
-            //     if(target != null){ // Rays from player to the score target
-            //         Debug.DrawLine(transform.position, target.transform.position, Color.red);
-            //         var bounds = target.GetComponent<BoxCollider>().bounds;
-            //         Debug.DrawLine(transform.position,
-            //                         bounds.min,
-            //                           Color.red);
-            //         Debug.DrawLine(transform.position,
-            //                         new Vector3(bounds.min.x, bounds.max.y, 0),
-            //                           Color.red);
-            //         }   
-            // }
 
         // For the roof and the ground    
         // fetch the max Y of the ground
@@ -253,22 +220,29 @@ public class Solver : Agent
         // Loooooose
         if (collidedObj.gameObject.CompareTag("Obstacle"))
             {
-                SetReward(-1);
+                AddReward(-1);
                 // Reward the Generator 
                 float aux = Generator.GetComponent<Generator>().aux_input;
                 float solver_value = GetCumulativeReward();
-                float generator_reward = solver_value * aux;
+                float generator_reward = 0.3f * solver_value * aux;
                 // End the episode of the Generator and the solver
                 Generator.GetComponent<Generator>().AddReward(generator_reward);
                 Generator.GetComponent<Generator>().EndEpisode();
                 EndEpisode();
             }
+        else if (collidedObj.gameObject.CompareTag("Limit"))
+        {
+            AddReward(-0.001f); // To motivate not to hit the roof
+
+        }
         // SCOREEEEEEEEEEEEE!
         else if (collidedObj.gameObject.CompareTag("Scoring"))
         {
             score++;
             maxScore = Mathf.Max(score, maxScore);
             AddReward(.1f);
+            Generator.GetComponent<Generator>().AddReward(0.05f); // Motivate the generator to make the solver score
+            Generator.GetComponent<Generator>().latestAchieved = true; // let the next obstacle to be created
 
             // Goal reached
             if(score >= 10) {
@@ -278,7 +252,7 @@ public class Solver : Agent
 
                 float aux = Generator.GetComponent<Generator>().aux_input;
                 float solver_value = GetCumulativeReward();
-                float generator_reward = solver_value * aux;
+                float generator_reward = 0.3f * solver_value * aux;
                 // End the episode of the Generator and the solver
                 Generator.GetComponent<Generator>().AddReward(generator_reward);
                 Generator.GetComponent<Generator>().EndEpisode();

@@ -108,7 +108,7 @@ GameObject:
   - component: {fileID: 6000874951624394889}
   m_Layer: 0
   m_Name: Roof
-  m_TagString: Obstacle
+  m_TagString: Limit
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -143,7 +143,7 @@ BoxCollider:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_IsTrigger: 1
+  m_IsTrigger: 0
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
@@ -476,9 +476,9 @@ Rigidbody:
   m_ImplicitTensor: 1
   m_UseGravity: 0
   m_IsKinematic: 0
-  m_Interpolate: 0
+  m_Interpolate: 1
   m_Constraints: 48
-  m_CollisionDetection: 0
+  m_CollisionDetection: 1
 --- !u!135 &7828916637515453273
 SphereCollider:
   m_ObjectHideFlags: 0
@@ -515,12 +515,12 @@ MonoBehaviour:
   agentParameters:
     maxStep: 0
   hasUpgradedFromAgentParameters: 1
-  MaxStep: 200
+  MaxStep: 0
   isTraining: 1
   jumpForce: 1.3
   jumpKey: 
-  JUMP_TIME_WINDOW: 0.01
-  gravity_multiplier: 0.6
+  JUMP_TIME_WINDOW: 0.05
+  gravity_multiplier: 1
   rBody: {fileID: 0}
   score: 0
   maxScore: 0
@@ -723,7 +723,8 @@ MonoBehaviour:
   agentParameters:
     maxStep: 0
   hasUpgradedFromAgentParameters: 1
-  MaxStep: 1000
+  MaxStep: 0
+  solver: {fileID: 1646501753793278467}
   randomizeAuxInput: 1
   aux_input: -1
   nextTopY: 0
@@ -731,6 +732,7 @@ MonoBehaviour:
   nextHDistance: 1.12
   n_obstacles: 11
   prefab: {fileID: 413873640207726821, guid: 786a252b194e6be878352bdde8f83fcc, type: 3}
+  latestAchieved: 1
   Obstacles_lst: []
 --- !u!114 &3916187792759564614
 MonoBehaviour:
