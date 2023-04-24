@@ -21,7 +21,7 @@ public class Generator : Agent
     private float height_m; //mean
     private float height_std; //standard deviation
     private float height_min=2f;
-    private float height_max=9.5f;
+    private float height_max=4f;
     private float height_std_scale = 4.5f; // std = [0, 10]
 
     // Horizontal distance between consecutive holes
@@ -29,7 +29,7 @@ public class Generator : Agent
     private float h_distance_m; //mean; 
     private float h_distance_std; //std
     private const float h_distance_min=1.12f;
-    private float h_distance_max=7f;
+    private float h_distance_max=4f;
     private float h_distance_std_scale = 5f; // std = [0, 10]
 
     // Vertical difference between consecutive holes
@@ -229,8 +229,9 @@ public class Generator : Agent
 
 
 
-            // The difference must be at least height_min
-            if(top.position.y - bottom.position.y >= height_min){
+            // The difference must be at least height_min and at most height_max
+            if(top.position.y - bottom.position.y >= height_min && top.position.y - bottom.position.y 
+                <= height_max){
                 // + reward
                 AddReward(valid_reward);
             }else{
