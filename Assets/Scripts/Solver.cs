@@ -241,21 +241,25 @@ public class Solver : Agent
             score++;
             maxScore = Mathf.Max(score, maxScore);
             AddReward(.1f);
+            if(Generator){
             Generator.GetComponent<Generator>().AddReward(0.05f); // Motivate the generator to make the solver score
             Generator.GetComponent<Generator>().latestAchieved = true; // let the next obstacle to be created
-
+            Generator.GetComponent<Generator>().CreateWithAgent();
+                    }
             // Goal reached
             if(score >= 10) {
                 AddReward(1);
                 // only end the episode on training
                 if(isTraining){
 
-                float aux = Generator.GetComponent<Generator>().aux_input;
-                float solver_value = GetCumulativeReward();
-                float generator_reward = 0.3f * solver_value * aux;
-                // End the episode of the Generator and the solver
-                Generator.GetComponent<Generator>().AddReward(generator_reward);
-                Generator.GetComponent<Generator>().EndEpisode();
+            if(Generator){
+            float aux = Generator.GetComponent<Generator>().aux_input;
+            float solver_value = GetCumulativeReward();
+            float generator_reward = 0.3f * solver_value * aux;
+            // End the episode of the Generator and the solver
+            Generator.GetComponent<Generator>().AddReward(generator_reward);
+            Generator.GetComponent<Generator>().EndEpisode();
+                            }
 
                     EndEpisode();
                 }

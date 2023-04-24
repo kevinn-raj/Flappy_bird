@@ -31,6 +31,13 @@ public class Obstacles : MonoBehaviour
     [HideInInspector]
     public Pipe_Spawner spawner; // Who spawned you
 
+
+    void SetScoringBox(){
+        Vector3 diff = top.localPosition - bottom.localPosition;
+        Vector3 mid = (top.localPosition + bottom.localPosition)/2;
+        scoringZone.size = new Vector3(0.8f, diff.y, 2);
+        scoringZone.center = new Vector3(0, mid.y, 0); // at the center
+    }
     private void Start()
     {
         // Set the distance between the pipes
@@ -49,6 +56,8 @@ public class Obstacles : MonoBehaviour
     {
         // Move the Pipe to the left
         transform.position += Vector3.left * speed * Time.deltaTime;
+
+        SetScoringBox();
     }
 
     private void OnTriggerStay(Collider o){

@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 8053816348405687661}
   - component: {fileID: 3292951037843023247}
   m_Layer: 3
-  m_Name: RaySensor
+  m_Name: Obstacle Sensor
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -44,17 +44,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6bb6b867a41448888c1cd4f99643ad71, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_SensorName: RayPerceptionSensor
+  m_SensorName: Obstacle Sensor
   m_DetectableTags:
   - Obstacle
-  - Scoring
   m_RaysPerDirection: 4
   m_MaxRayDegrees: 98.46
-  m_SphereCastRadius: 0.1
+  m_SphereCastRadius: 0
   m_RayLength: 16.3
   m_RayLayerMask:
     serializedVersion: 2
-    m_Bits: 4294967291
+    m_Bits: 65
   m_ObservationStacks: 1
   rayHitColor: {r: 1, g: 0, b: 0, a: 1}
   rayMissColor: {r: 1, g: 1, b: 1, a: 1}
@@ -106,7 +105,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7204853287043730036}
   - component: {fileID: 6000874951624394889}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Roof
   m_TagString: Limit
   m_Icon: {fileID: 0}
@@ -213,6 +212,65 @@ MonoBehaviour:
   m_ShowGizmos: 1
   m_CompressionType: 1
   m_ObservationStacks: 1
+--- !u!1 &3016300492655516454
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 767566313982588579}
+  - component: {fileID: 2847357674304696069}
+  m_Layer: 3
+  m_Name: Scoring Sensor
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &767566313982588579
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3016300492655516454}
+  m_LocalRotation: {x: 0, y: 0.7071068, z: 0, w: 0.7071068}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2699344111627665083}
+  m_RootOrder: -1
+  m_LocalEulerAnglesHint: {x: 0, y: 90, z: 0}
+--- !u!114 &2847357674304696069
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3016300492655516454}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6bb6b867a41448888c1cd4f99643ad71, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_SensorName: Scoring Sensor
+  m_DetectableTags:
+  - Scoring
+  m_RaysPerDirection: 4
+  m_MaxRayDegrees: 80
+  m_SphereCastRadius: 0.1
+  m_RayLength: 16.3
+  m_RayLayerMask:
+    serializedVersion: 2
+    m_Bits: 128
+  m_ObservationStacks: 1
+  rayHitColor: {r: 0.101122975, g: 1, b: 0, a: 1}
+  rayMissColor: {r: 1, g: 1, b: 1, a: 1}
+  m_StartVerticalOffset: 0
+  m_EndVerticalOffset: 0
 --- !u!1 &3243121552877487644
 GameObject:
   m_ObjectHideFlags: 0
@@ -307,7 +365,7 @@ GameObject:
   - component: {fileID: 8871241166505575550}
   - component: {fileID: 2899919758911585898}
   - component: {fileID: 1683148514453279551}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Ground
   m_TagString: Obstacle
   m_Icon: {fileID: 0}
@@ -448,6 +506,7 @@ Transform:
   m_Children:
   - {fileID: 6421579889265728065}
   - {fileID: 8053816348405687661}
+  - {fileID: 767566313982588579}
   - {fileID: 6761153510166310864}
   m_Father: {fileID: 7453529134438445174}
   m_RootOrder: -1
@@ -517,10 +576,10 @@ MonoBehaviour:
   hasUpgradedFromAgentParameters: 1
   MaxStep: 0
   isTraining: 1
-  jumpForce: 1.3
+  jumpForce: 6
   jumpKey: 
-  JUMP_TIME_WINDOW: 0.05
-  gravity_multiplier: 1
+  JUMP_TIME_WINDOW: 0
+  gravity_multiplier: 0.779
   rBody: {fileID: 0}
   score: 0
   maxScore: 0
@@ -730,9 +789,13 @@ MonoBehaviour:
   nextTopY: 0
   nextBottomY: 0
   nextHDistance: 1.12
-  n_obstacles: 11
+  nextHeight: 0
+  n_obstacles: 10
   prefab: {fileID: 413873640207726821, guid: 786a252b194e6be878352bdde8f83fcc, type: 3}
   latestAchieved: 1
+  isHeuristic: 0
+  heur_hdist_min: 0
+  heur_hdist_max: 0
   Obstacles_lst: []
 --- !u!114 &3916187792759564614
 MonoBehaviour:
