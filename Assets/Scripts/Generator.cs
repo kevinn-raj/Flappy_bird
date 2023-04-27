@@ -11,12 +11,12 @@ public class Generator : Agent
 {
     public Solver solver;
     [Header("Auxiliary Input")]
+    public bool isDrivenByCurriculum = true;
     public bool randomizeAuxInput = true;
     [Range(-1f,1f)]    public float aux_input=1f;
     private const int nAuxInputs = 5;
     private float[] auxInputs = new float[nAuxInputs]{-1f, -.5f, 0f, .5f, 1f};
 
-    private bool isRandom=false; // randomize on one episode or not
     [Header("Generator actions")]
     // Hole height
     //  minimum 1.5, Always positive
@@ -136,11 +136,13 @@ public class Generator : Agent
         prevPipe = gameObject;
         pipe = gameObject;
         
-        // randomize the aux input, choose one of the values
-        /*if(randomizeAuxInput) aux_input = auxInputs[Random.Range(0, nAuxInputs)];*/
+       
 
         // aux_input as environment parameters // Curriculum
+        if(isDrivenByCurriculum)
         aux_input = Academy.Instance.EnvironmentParameters.GetWithDefault("aux_input", 0.0f);
+        // randomize the aux input, choose one of the values
+        else if(randomizeAuxInput) aux_input = auxInputs[Random.Range(0, nAuxInputs)];
         
         // Set the first hdistance
         // nextHDistance=Random.Range(h_distance_min, h_distance_max);
