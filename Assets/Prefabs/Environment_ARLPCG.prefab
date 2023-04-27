@@ -485,6 +485,7 @@ GameObject:
   - component: {fileID: 1646501753793278467}
   - component: {fileID: 9204412741681559623}
   - component: {fileID: 85901394865069536}
+  - component: {fileID: 9184891541472065712}
   m_Layer: 3
   m_Name: Player
   m_TagString: Player
@@ -576,7 +577,7 @@ MonoBehaviour:
   hasUpgradedFromAgentParameters: 1
   MaxStep: 0
   isTraining: 1
-  jumpForce: 6
+  jumpForce: 5.5
   jumpKey: 
   JUMP_TIME_WINDOW: 0
   gravity_multiplier: 0.779
@@ -614,7 +615,7 @@ MonoBehaviour:
     VectorActionDescriptions: []
     VectorActionSpaceType: 0
     hasUpgradedBrainParametersWithActionSpec: 1
-  m_Model: {fileID: 5022602860645237092, guid: 68e52e74c41b3fb0d9dc4aaae6b79ac3, type: 3}
+  m_Model: {fileID: 0}
   m_InferenceDevice: 0
   m_BehaviorType: 0
   m_BehaviorName: Solver
@@ -636,6 +637,22 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   DecisionPeriod: 5
   TakeActionsBetweenDecisions: 1
+--- !u!114 &9184891541472065712
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4897315722166938361}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f2902496c0120472b90269f94a0aec7e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Record: 0
+  NumStepsToRecord: 0
+  DemonstrationName: Solver
+  DemonstrationDirectory: Demos
 --- !u!1 &6851218077840661115
 GameObject:
   m_ObjectHideFlags: 0
@@ -794,8 +811,10 @@ MonoBehaviour:
   prefab: {fileID: 413873640207726821, guid: 786a252b194e6be878352bdde8f83fcc, type: 3}
   latestAchieved: 1
   isHeuristic: 0
-  heur_hdist_min: 0
-  heur_hdist_max: 0
+  heur_hdist_min: 4
+  heur_hdist_max: 4
+  heur_height_min: 5
+  heur_height_max: 5
   Obstacles_lst: []
 --- !u!114 &3916187792759564614
 MonoBehaviour:
@@ -819,9 +838,9 @@ MonoBehaviour:
     VectorActionDescriptions: []
     VectorActionSpaceType: 1
     hasUpgradedBrainParametersWithActionSpec: 1
-  m_Model: {fileID: 5022602860645237092, guid: b990c0f5c8ad98204abadaccfd0cd987, type: 3}
+  m_Model: {fileID: 0}
   m_InferenceDevice: 0
-  m_BehaviorType: 2
+  m_BehaviorType: 0
   m_BehaviorName: Generator
   TeamId: 0
   m_UseChildSensors: 0

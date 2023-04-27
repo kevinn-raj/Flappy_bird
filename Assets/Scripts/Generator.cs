@@ -13,6 +13,8 @@ public class Generator : Agent
     [Header("Auxiliary Input")]
     public bool randomizeAuxInput = true;
     [Range(-1f,1f)]    public float aux_input=1f;
+    private const int nAuxInputs = 5;
+    private float[] auxInputs = new float[nAuxInputs]{-1f, -.5f, 0f, .5f, 1f};
 
     private bool isRandom=false; // randomize on one episode or not
     [Header("Generator actions")]
@@ -21,7 +23,7 @@ public class Generator : Agent
     private float height_m; //mean
     private float height_std; //standard deviation
     private float height_min=2f;
-    private float height_max=4f;
+    private float height_max=6f;
     private float height_std_scale = 4.5f; // std = [0, 10]
 
     // Horizontal distance between consecutive holes
@@ -73,8 +75,10 @@ public class Generator : Agent
     public bool latestAchieved=true;
     [HideInInspector] public bool isHeuristic;
     [Header("Heuristic Parameters")]
-    [Range(1.12f,4f)] public float heur_hdist_min;
-    [Range(1.12f,4f)] public float heur_hdist_max;
+    [Range(1.12f,4f)] public float heur_hdist_min=1.12f;
+    [Range(1.12f,4f)] public float heur_hdist_max=4f;
+    [Range(2f,5f)] public float heur_height_min=2f;
+    [Range(2f,5f)] public float heur_height_max=5f;
 
 
     [HideInInspector]
@@ -132,7 +136,11 @@ public class Generator : Agent
         prevPipe = gameObject;
         pipe = gameObject;
         
-        if(randomizeAuxInput) aux_input = Random.Range(-1f, 1f);
+        // randomize the aux input, choose one of the values
+        /*if(randomizeAuxInput) aux_input = auxInputs[Random.Range(0, nAuxInputs)];*/
+
+        // aux_input as environment parameters // Curriculum
+        aux_input = Academy.Instance.EnvironmentParameters.GetWithDefault("aux_input", 0.0f);
         
         // Set the first hdistance
         // nextHDistance=Random.Range(h_distance_min, h_distance_max);
@@ -154,7 +162,7 @@ public class Generator : Agent
         Vector3 initPos = transform.position;
 
         for(int j=0; j<n_obstacles && counter<n_obstacles; j++){
-        float randHeight = Random.Range(height_min, height_max);
+        float randHeight = Random.Range(heur_height_min, heur_height_max);
         float yposTop = Random.Range(top_maxy, top_miny+randHeight);//local
         // float randHDistance = Random.Range(h_distance_min, h_distance_max);
         float randHDistance = Random.Range(heur_hdist_min, heur_hdist_max);

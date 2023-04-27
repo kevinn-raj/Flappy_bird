@@ -66,7 +66,49 @@ engine_settings:
   width: 84
   height: 84
   quality_level: 5
-  time_scale: 4
+  time_scale: 3
   target_frame_rate: -1
   capture_frame_rate: 30
   no_graphics: true   
+  
+environment_parameters:
+# To randomize an environment parameter
+#  aux_input:
+#    sampler_type: uniform
+#    sampler_parameters:
+#        min_value: -1.0
+#        max_value: -.6
+  aux_input:
+    curriculum:
+      - name: Easy # The '-' is important as this is a list
+        completion_criteria:
+          measure: reward
+          behavior: Solver
+          signal_smoothing: true
+          min_lesson_length: 50
+          threshold: 1
+        value: 1
+      - name: Moderate_Easy # This is the start of the second lesson
+        completion_criteria:
+          measure: progress
+          behavior: Solver
+          signal_smoothing: true
+          threshold: .4
+        value: 0.5
+      - name: Moderate
+        completion_criteria:
+          measure: progress
+          behavior: Solver
+          signal_smoothing: true
+          threshold: .55
+        value: 0
+      - name: Moderate_Hard
+        completion_criteria:
+          measure: progress
+          behavior: Solver
+          signal_smoothing: true
+          threshold: .7
+        value: -0.5
+      - name: Hard
+        value: -1
+

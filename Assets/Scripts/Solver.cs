@@ -60,7 +60,7 @@ public class Solver : Agent
 
     public override void Initialize(){
         rBody = GetComponent<Rigidbody>();
-        startingPosition = transform.position;
+        startingPosition = transform.localPosition;
         lastJump = Time.time;
 
         m_ResetParams = Academy.Instance.EnvironmentParameters;
@@ -79,34 +79,6 @@ public class Solver : Agent
             //Set the vertical distance from the roof as observation
             sensor.AddObservation(Mathf.Abs(roofMinY - transform.position.y));
 
-        // Add each target as observation    
-        // Only add the first target_numbers-th element as observation
-        // for(int i=0; i<target_numbers; i++){  
-        //     GameObject target = targets[i];
-        // // Get the scoring Triggers
-        //     //// If the target is not null
-        //     if(target){
-        //         /* Observations */
-        //         var scoreColl = target.GetComponent<BoxCollider>();
-        //         // x coordinate of The Left 
-        //         sensor.AddObservation(scoreColl.bounds.min.x - transform.position.x);
-        //         // y coordinate of the Bottom
-        //         sensor.AddObservation(scoreColl.bounds.min.y - transform.position.y);
-        //         // y coordinate of the Top
-        //         sensor.AddObservation(scoreColl.bounds.max.y - transform.position.y);
-
-        //     }
-        //     else{
-        //     // If no pipe is spawned yet, then suppose the pipe is far away
-        //     // The number of observation must always be the same
-        //         // x coordinate of The Left      
-        //         sensor.AddObservation(2);
-        //         // y coordinate of the Bottom
-        //         sensor.AddObservation(-2);
-        //         // y coordinate of the Top
-        //         sensor.AddObservation(2);
-        //          }
-        //  }
              
         // velocity Y
         sensor.AddObservation(rBody.velocity.y);
@@ -156,7 +128,7 @@ public class Solver : Agent
     public override void OnEpisodeBegin(){
         // Reset
         Reset();
-
+        // Random
     }
 
     public void Update(){
@@ -166,8 +138,6 @@ public class Solver : Agent
         float z = Mathf.Clamp(transform.localPosition.z, -ZMAX, ZMAX);
 
         transform.localPosition = new Vector3(x, y, z);
-
-
     }
 
     public void FixedUpdate(){
@@ -175,7 +145,7 @@ public class Solver : Agent
         // Add custom gravity force 
         rBody.AddForce(Physics.gravity * gravity_multiplier);
 
-        AddReward(0.001f); // To motivate to fly
+        AddReward(0.0001f); // To motivate to fly
 
     }
     public void LateUpdate(){
@@ -205,10 +175,21 @@ public class Solver : Agent
         score = 0;
         
         //Reset Movement and Position
-        transform.position = startingPosition;
+        transform.localPosition = new Vector3(startingPosition.x, Random.Range(-4.8f, 4.26f) , startingPosition.z);
         rBody.velocity = Vector3.zero;
         
         OnReset?.Invoke();
+    }
+    private void RewardTheGen(){
+        // Reward the generator
+            if(Generator){
+            float aux = Generator.GetComponent<Generator>().aux_input;
+            float solver_value = GetCumulativeReward();
+            float generator_reward = 1.0f * solver_value * aux;
+            // End the episode of the Generator and the solver
+            Generator.GetComponent<Generator>().AddReward(generator_reward);
+            Generator.GetComponent<Generator>().EndEpisode();
+            }
     }
 
     private void OnCollisionEnter(Collision collidedObj)
@@ -221,28 +202,25 @@ public class Solver : Agent
         if (collidedObj.gameObject.CompareTag("Obstacle"))
             {
                 AddReward(-1);
-                // Reward the Generator 
-                float aux = Generator.GetComponent<Generator>().aux_input;
-                float solver_value = GetCumulativeReward();
-                float generator_reward = 0.3f * solver_value * aux;
-                // End the episode of the Generator and the solver
-                Generator.GetComponent<Generator>().AddReward(generator_reward);
-                Generator.GetComponent<Generator>().EndEpisode();
+                RewardTheGen();
                 EndEpisode();
             }
-        else if (collidedObj.gameObject.CompareTag("Limit"))
-        {
-            AddReward(-0.001f); // To motivate not to hit the roof
+        // else if (collidedObj.gameObject.CompareTag("Limit"))
+        // {
+        //     AddReward(-0.001f); // To motivate not to hit the roof
 
-        }
+        // }
         // SCOREEEEEEEEEEEEE!
         else if (collidedObj.gameObject.CompareTag("Scoring"))
         {
             score++;
             maxScore = Mathf.Max(score, maxScore);
-            AddReward(.1f);
+            // log the scores into TensorBoard
+            var statsRecorder = Academy.Instance.StatsRecorder;
+            statsRecorder.Add("Score", score);
+            // Reward the score
+            AddReward(0.1f);
             if(Generator){
-            Generator.GetComponent<Generator>().AddReward(0.05f); // Motivate the generator to make the solver score
             Generator.GetComponent<Generator>().latestAchieved = true; // let the next obstacle to be created
             Generator.GetComponent<Generator>().CreateWithAgent();
                     }
@@ -251,16 +229,7 @@ public class Solver : Agent
                 AddReward(1);
                 // only end the episode on training
                 if(isTraining){
-
-            if(Generator){
-            float aux = Generator.GetComponent<Generator>().aux_input;
-            float solver_value = GetCumulativeReward();
-            float generator_reward = 0.3f * solver_value * aux;
-            // End the episode of the Generator and the solver
-            Generator.GetComponent<Generator>().AddReward(generator_reward);
-            Generator.GetComponent<Generator>().EndEpisode();
-                            }
-
+                    RewardTheGen();
                     EndEpisode();
                 }
             }
