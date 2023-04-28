@@ -180,15 +180,14 @@ public class Solver : Agent
         
         OnReset?.Invoke();
     }
-    private void RewardTheGen(){
+    private void RewardTheGen(float solverReward){
         // Reward the generator
             if(Generator){
             float aux = Generator.GetComponent<Generator>().aux_input;
-            float solver_value = GetCumulativeReward();
-            float generator_reward = 1.0f * solver_value * aux;
+            float weight = 1.0f;
+            float generator_reward = weight * solverReward * aux;
             // End the episode of the Generator and the solver
             Generator.GetComponent<Generator>().AddReward(generator_reward);
-            Generator.GetComponent<Generator>().EndEpisode();
             }
     }
 
@@ -201,9 +200,11 @@ public class Solver : Agent
         // Loooooose
         if (collidedObj.gameObject.CompareTag("Obstacle"))
             {
-                AddReward(-1);
-                RewardTheGen();
+                float CollideReward = -1f;
+                AddReward(CollideReward);
+                RewardTheGen(CollideReward);
                 EndEpisode();
+                Generator.GetComponent<Generator>().EndEpisode();
             }
         // else if (collidedObj.gameObject.CompareTag("Limit"))
         // {
@@ -219,18 +220,20 @@ public class Solver : Agent
             var statsRecorder = Academy.Instance.StatsRecorder;
             statsRecorder.Add("Score", score);
             // Reward the score
-            AddReward(0.1f);
+            float reward = 0.1f;
+            AddReward(reward);
+            RewardTheGen(reward);
+
             if(Generator){
             Generator.GetComponent<Generator>().latestAchieved = true; // let the next obstacle to be created
             Generator.GetComponent<Generator>().CreateWithAgent();
                     }
             // Goal reached
-            if(score >= Generator.GetComponent<Generator>().n_obstacles) {
-                AddReward(1);
+            if(score >= Generator.GetComponent<Generator>().n_obstacles){
                 // only end the episode on training
                 if(isTraining){
-                    RewardTheGen();
                     EndEpisode();
+                Generator.GetComponent<Generator>().EndEpisode();
                 }
             }
         }

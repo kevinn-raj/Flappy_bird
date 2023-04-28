@@ -262,7 +262,7 @@ public class Generator : Agent
              // Add the created obstacle to the list of all generated obstacles
             Obstacles_lst.Add(pipe);
     
-            // REWARD- The bottom one must be above the lower limit
+           /* // REWARD- The bottom one must be above the lower limit
             if(transform.position.y - bottom.position.y  >= bottom_miny){
                 // + reward
                 AddReward(valid_reward);
@@ -272,7 +272,7 @@ public class Generator : Agent
                 // Reset the episode after mistakes or not
                 // Comment the following line if not
                // EndEpisode();
-            }
+            }*/
                                    
         // Reassign the variable to the actual obstacle
             // Relative position to the generator transform
