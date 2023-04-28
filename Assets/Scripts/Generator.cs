@@ -60,7 +60,12 @@ public class Generator : Agent
     private List<float> previous = new List<float>();
     private GameObject prevPipe;
     private GameObject pipe;
-
+    private Vector3 nextPipePos;
+    private float theta_t = 0f; //actual angle relative to previous obstacle
+    private float theta_next = 0f;
+    private float tau_next; // tau_{t+1} angle of turn, between P_{t+1}, P_{t}, P_{t-1}. In radian.  
+    private float tau_min = Mathf.Deg2Rad * 30f;
+    private float tau_max = Mathf.Deg2Rad * 320f;
 
     [Header("Parameters")]
     [Min(0)]    public int n_obstacles = 10;
@@ -153,10 +158,10 @@ public class Generator : Agent
         
     }
     public override void CollectObservations(VectorSensor sensor){
-        sensor.AddObservation(previous[0]); // top y
-        sensor.AddObservation(previous[1]); // bottom y
-        sensor.AddObservation(previous[2]); // top or bottom or parent x
         sensor.AddObservation(aux_input); // auxiliary input
+        sensor.AddObservation(prevPipe.transform.position.x);
+        sensor.AddObservation(prevPipe.transform.position.y);
+        sensor.AddObservation(theta_t); //actual angle relative to previous obstacle
     }
 
     public override void Heuristic(in ActionBuffers actionsOut){
@@ -191,15 +196,23 @@ public class Generator : Agent
         var act = actionBuffers.ContinuousActions;
         float randness = .1f; // Add some randomness
         /* Actions - And internal rewards*/
-        // y position of the next top pipe, relative position
-        nextTopY = ScaleAction(act[0], top_miny, top_maxy) - Random.Range(0f, randness);
+        // Turn angle in radian
+        tau_next = ScaleAction(act[0], tau_min, tau_max);
 
-        nextHeight = ScaleAction(act[1], height_min, height_max) + Random.Range(0f, randness);
+        nextHeight = ScaleAction(act[1], height_min, height_max);
+
+        // Vertical difference between consecutive holes, relative position
+        nextHDistance = ScaleAction(act[2], h_distance_min, h_distance_max);
+
+        // next pipe pos
+        theta_next = Mathf.PI - theta_t - tau_next; //tau_next = pi - theta_t - theta_{t+1}
+        float Dy = nextHDistance * Mathf.Tan(theta_next);
+        nextPipePos =  prevPipe.transform.position + new Vector3(nextHDistance, Dy, 0);
+        // y position of the next top pipe, relative position
+        nextTopY = nextPipePos.y + nextHeight/2;
         // y position of the next bottom pipe, relative position
         nextBottomY = nextTopY - nextHeight;
 
-        // Vertical difference between consecutive holes, relative position
-        nextHDistance = ScaleAction(act[2], h_distance_min, h_distance_max) + Random.Range(0f, randness);
     }
 
     void FixedUpdate(){
