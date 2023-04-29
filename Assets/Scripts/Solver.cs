@@ -222,10 +222,10 @@ public class Solver : Agent
             // Reward the score
             float reward = 0.1f;
             AddReward(reward);
-            RewardTheGen(reward);
+            RewardTheGen(.1f * reward);
 
-            if(Generator){
-            Generator.GetComponent<Generator>().latestAchieved = true; // let the next obstacle to be created
+            if(Generator){ // create the next one
+            Generator.GetComponent<Generator>().RequestAction();
             Generator.GetComponent<Generator>().CreateWithAgent();
                     }
             // Goal reached

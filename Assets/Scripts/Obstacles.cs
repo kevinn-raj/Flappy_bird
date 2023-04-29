@@ -69,7 +69,8 @@ public class Obstacles : MonoBehaviour
             // }
 
             // Destroy this gameObject and its children
-            Destroy(gameObject);
+            gameObject.SetActive(false);
+            Destroy(gameObject, 60f); // Destroy after a minute
          }
     }
 
