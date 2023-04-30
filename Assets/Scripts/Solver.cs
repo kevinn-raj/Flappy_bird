@@ -128,7 +128,9 @@ public class Solver : Agent
     public override void OnEpisodeBegin(){
         // Reset
         Reset();
-        // Random
+        // Reset the Generator as well
+        Generator.GetComponent<Generator>().EndEpisode();
+        Generator.GetComponent<Generator>().RequestDecision();
     }
 
     public void Update(){
@@ -225,8 +227,7 @@ public class Solver : Agent
             RewardTheGen(.1f * reward);
 
             if(Generator){ // create the next one
-            Generator.GetComponent<Generator>().RequestAction();
-            Generator.GetComponent<Generator>().CreateWithAgent();
+            Generator.GetComponent<Generator>().RequestDecision();
                     }
             // Goal reached
             if(score >= Generator.GetComponent<Generator>().n_obstacles){

@@ -5,6 +5,9 @@ public class Obstacles : MonoBehaviour
     public Transform top;
     public Transform bottom;
     public BoxCollider scoringZone;
+    public GameObject generator;
+    private Generator gen;
+    Transform genTrans;
 
     [SerializeField]
     private float distance; // distance between the top and the bottom pipes
@@ -40,16 +43,8 @@ public class Obstacles : MonoBehaviour
     }
     private void Start()
     {
-        // Set the distance between the pipes
-        // top.localPosition = new Vector3(top.localPosition.x, distance/2, top.localPosition.z);
-        // bottom.localPosition = new Vector3(bottom.localPosition.x, -distance/2, bottom.localPosition.z);   
-
-        // Set the size of the scoring zone accordingly
-        // scoringZone.size = new Vector3(scoringZone.size.x,
-        //                                 distance,
-        //                                 scoringZone.size.z);
-
-        // leftEdge = spawner.GetComponent<Transform>().position.x - 12f;
+        if(generator)
+            gen = generator.GetComponent<Generator>();
     }
 
     private void Update()
@@ -58,6 +53,27 @@ public class Obstacles : MonoBehaviour
         transform.position += Vector3.left * speed * Time.deltaTime;
 
         SetScoringBox();
+        if(generator){
+            genTrans = gen.GetComponent<Transform>();
+    
+            float valid_reward = .001f;
+            float punishment = -.1f;
+                    // REWARD- The bottom and the top  must be inside the limits
+            if(genTrans.position.y + bottom.position.y  >= gen.bottom_maxy || 
+                genTrans.position.y + bottom.position.y <= gen.bottom_miny ||
+                genTrans.position.y + top.position.y  <= gen.top_miny ||
+                genTrans.position.y + top.position.y  >= gen.top_maxy){
+                gen.AddReward(punishment); // - reward
+                // Reset the episode after mistakes or not
+                // Comment the following line if not
+                if(gen.endEpisodeOnWrong)
+                    gen.EndEpisode(); 
+            }else{  
+                // + reward
+                gen.AddReward(valid_reward);
+                // Debug.Log("Valid");
+            }
+        }
     }
 
     private void OnTriggerStay(Collider o){
@@ -70,7 +86,7 @@ public class Obstacles : MonoBehaviour
 
             // Destroy this gameObject and its children
             gameObject.SetActive(false);
-            Destroy(gameObject, 60f); // Destroy after a minute
+            Destroy(gameObject, 10f); // Destroy after a minute
          }
     }
 

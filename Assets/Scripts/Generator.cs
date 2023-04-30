@@ -9,11 +9,12 @@ using Random = UnityEngine.Random;
 
 public class Generator : Agent
 {
+
     public Solver solver;
     [Header("Auxiliary Input")]
     public bool isDrivenByCurriculum = true;
     public bool randomizeAuxInput = true;
-    [Range(-1f,1f)]    public float aux_input=1f;
+    [Range(-3f,3f)]    public float aux_input=1f;
     private const int nAuxInputs = 5;
     private float[] auxInputs = new float[nAuxInputs]{-1f, -.5f, 0f, .5f, 1f};
 
@@ -48,7 +49,7 @@ public class Generator : Agent
     [SerializeField]    private float nextBottomY;
     [SerializeField]    private float nextHDistance=h_distance_min;
     [SerializeField]    private float nextHeight=height_min;
-
+    public bool endEpisodeOnWrong = true; // end episode
     // obstacle speed, constant for an episode an same for every obstacle
     // Positive
     private float obst_speed = 3f;
@@ -62,20 +63,18 @@ public class Generator : Agent
     private GameObject pipe;
     private Vector3 nextPipePos;
     [SerializeField] private float theta_t = 0f; //actual angle relative to previous obstacle
+    private float theta_max = 77f * Mathf.Deg2Rad;
     [SerializeField] private float theta_next = 0f;
-    [SerializeField] private float tau_next; // tau_{t+1} angle of turn, between P_{t+1}, P_{t}, P_{t-1}. In radian.  
-    private float tau_min = Mathf.Deg2Rad * 30f *2;
-    private float tau_max = Mathf.Deg2Rad * 160 /2;
 
     [Header("Parameters")]
     [Min(0)]    public int n_obstacles = 10;
     public GameObject prefab;
 
     /* Limits and Constraints */
-    float top_maxy = 4.8f;
-    float bottom_maxy;
-    float bottom_miny = -4.5f;
-    float top_miny;
+    [HideInInspector] public float top_maxy = 4.8f;
+    [HideInInspector] public float bottom_maxy;
+    [HideInInspector] public float bottom_miny = -4.5f;
+    [HideInInspector] public float top_miny;
 
     public bool latestAchieved=true;
     [HideInInspector] public bool isHeuristic;
@@ -121,6 +120,12 @@ public class Generator : Agent
     }
     
     public void FixedUpdate(){
+        // In case no obstacle in the scene
+        if(Obstacles_lst != null){
+            if(Obstacles_lst.Count == 0){ 
+                transform.parent.GetComponentInChildren<Solver>().EndEpisode();
+            }
+        }
     }
 
     public override void OnEpisodeBegin(){
@@ -141,8 +146,6 @@ public class Generator : Agent
         aux_input = Academy.Instance.EnvironmentParameters.GetWithDefault("aux_input", 0.0f);
         // randomize the aux input, choose one of the values
         else if(randomizeAuxInput) aux_input = auxInputs[Random.Range(0, nAuxInputs)];
-        
-        RequestAction();
     }
     public override void CollectObservations(VectorSensor sensor){
         sensor.AddObservation(aux_input); // auxiliary input
@@ -154,6 +157,7 @@ public class Generator : Agent
         sensor.AddObservation(transform.position.x);
         sensor.AddObservation(transform.position.y + Random.Range(top_miny, bottom_maxy)); // suupose a random starting position
         sensor.AddObservation(0f); //suppose angle relative to previous obstacle is 0
+        // Debug.Log("First obs");
         }  
     }
 
@@ -189,15 +193,14 @@ public class Generator : Agent
         var act = actionBuffers.ContinuousActions;
         /* Actions - And internal rewards*/
         // Turn angle in radian
-        tau_next = ScaleAction(act[0], tau_min, tau_max);
+        theta_next = ScaleAction(act[0], -theta_max, theta_max);
+        // Debug.Log(theta_next);
 
         nextHeight = ScaleAction(act[1], height_min, height_max);
 
         // Vertical difference between consecutive holes, relative position
         nextHDistance = ScaleAction(act[2], h_distance_min, h_distance_max);
 
-        // next pipe pos
-        theta_next = Mathf.PI - theta_t - tau_next; //tau_next = pi - theta_t - theta_{t+1}
 
         float Dy = nextHDistance * Mathf.Tan(theta_next);
         nextPipePos =  new Vector3(nextHDistance, Dy, 0);
@@ -212,8 +215,7 @@ public class Generator : Agent
     // Generate with the Generator Agent
     public void CreateWithAgent(){
         if(!isHeuristic){ /*Execute only in Inference mode*/
-        float valid_reward = .001f;
-        float punishment = -.1f;
+
 
         /*Spawn only if it is less than a certain number and the solver has achieved the previous one*/
         if(counter <= n_obstacles){
@@ -227,6 +229,7 @@ public class Generator : Agent
 
             // Obstacle speed
             pipe.GetComponent<Obstacles>().speed = obst_speed;
+            pipe.GetComponent<Obstacles>().generator = gameObject;
 
             /* Constraints - Rewarding the Generator*/
             // Internal Reward
@@ -240,20 +243,7 @@ public class Generator : Agent
              // Add the created obstacle to the list of all generated obstacles
             Obstacles_lst.Add(pipe);
     
-            // REWARD- The bottom and the top  must be inside the limits
-            if(transform.position.y + bottom.transform.position.y  >= bottom_maxy || 
-                transform.position.y + bottom.transform.position.y <= bottom_miny ||
-                transform.position.y + top.transform.position.y  <= top_miny ||
-                transform.position.y + top.transform.position.y  >= top_maxy){
-                AddReward(punishment); // - reward
-                // Reset the episode after mistakes or not
-                // Comment the following line if not
-                // EndEpisode(); 
-            }else{  
-                // + reward
-                AddReward(valid_reward);
-                // Debug.Log("Valid");
-            }
+
 
             counter++; // increment the counter
             //Debug.Log(counter);
