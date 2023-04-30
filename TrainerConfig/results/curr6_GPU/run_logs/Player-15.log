@@ -1,0 +1,30 @@
+Mono path[0] = 'Z:/Git/Flappy_bird/Builds/Windows/Curr6/Flappy_bird_Data/Managed'
+Mono config path = 'Z:/Git/Flappy_bird/Builds/Windows/Curr6/MonoBleedingEdge/etc'
+Initialize engine version: 2022.2.11f1 (621cd60d08fd)
+[Subsystems] Discovering subsystems at path Z:/Git/Flappy_bird/Builds/Windows/Curr6/Flappy_bird_Data/UnitySubsystems
+Forcing GfxDevice: Null
+GfxDevice: creating device client; threaded=0; jobified=0
+NullGfxDevice:
+    Version:  NULL 1.0 [1.0]
+    Renderer: Null Device
+    Vendor:   Unity Technologies
+Begin MonoManager ReloadAssembly
+- Loaded All Assemblies, in  0.218 seconds
+- Finished resetting the current domain, in  0.002 seconds
+ERROR: Shader Sprites/Default shader is not supported on this GPU (none of subshaders/fallbacks are suitable)
+Microsoft Media Foundation video decoding to texture disabled: graphics device is Null, only Direct3D 11 and Direct3D 12 (only on desktop) are supported for hardware-accelerated video decoding.
+ERROR: Shader Sprites/Mask shader is not supported on this GPU (none of subshaders/fallbacks are suitable)
+ERROR: Shader Unlit/Texture shader is not supported on this GPU (none of subshaders/fallbacks are suitable)
+ERROR: Shader GUI/Text Shader shader is not supported on this GPU (none of subshaders/fallbacks are suitable)
+UnloadTime: 1.119600 ms
+Unexpected gRPC exception when trying to initialize communication: Grpc.Core.RpcException: Status(StatusCode=Unknown, Detail="Stream removed")
+  at Grpc.Core.Internal.AsyncCall`2[TRequest,TResponse].UnaryCall (TRequest msg) [0x00172] in <2f154ad39ec14cfea604815989d96352>:0 
+  at Grpc.Core.Calls.BlockingUnaryCall[TRequest,TResponse] (Grpc.Core.CallInvocationDetails`2[TRequest,TResponse] call, TRequest req) [0x00006] in <2f154ad39ec14cfea604815989d96352>:0 
+  at Grpc.Core.DefaultCallInvoker.BlockingUnaryCall[TRequest,TResponse] (Grpc.Core.Method`2[TRequest,TResponse] method, System.String host, Grpc.Core.CallOptions options, TRequest request) [0x00009] in <2f154ad39ec14cfea604815989d96352>:0 
+  at Grpc.Core.Interceptors.InterceptingCallInvoker.<BlockingUnaryCall>b__3_0[TRequest,TResponse] (TRequest req, Grpc.Core.Interceptors.ClientInterceptorContext`2[TRequest,TResponse] ctx) [0x0001b] in <2f154ad39ec14cfea604815989d96352>:0 
+  at Grpc.Core.ClientBase+ClientBaseConfiguration+ClientBaseConfigurationInterceptor.BlockingUnaryCall[TRequest,TResponse] (TRequest request, Grpc.Core.Interceptors.ClientInterceptorContext`2[TRequest,TResponse] context, Grpc.Core.Interceptors.Interceptor+BlockingUnaryCallContinuation`2[TRequest,TResponse] continuation) [0x00009] in <2f154ad39ec14cfea604815989d96352>:0 
+  at Grpc.Core.Interceptors.InterceptingCallInvoker.BlockingUnaryCall[TRequest,TResponse] (Grpc.Core.Method`2[TRequest,TResponse] method, System.String host, Grpc.Core.CallOptions options, TRequest request) [0x00010] in <2f154ad39ec14cfea604815989d96352>:0 
+  at Unity.MLAgents.CommunicatorObjects.UnityToExternalProto+UnityToExternalProtoClient.Exchange (Unity.MLAgents.CommunicatorObjects.UnityMessageProto request, Grpc.Core.CallOptions options) [0x00006] in <a6bf6b7cbaa8483781c2237572c0c5f6>:0 
+  at Unity.MLAgents.CommunicatorObjects.UnityToExternalProto+UnityToExternalProtoClient.Exchange (Unity.MLAgents.CommunicatorObjects.UnityMessageProto request, Grpc.Core.Metadata headers, System.Nullable`1[T] deadline, System.Threading.CancellationToken cancellationToken) [0x0000e] in <a6bf6b7cbaa8483781c2237572c0c5f6>:0 
+  at Unity.MLAgents.RpcCommunicator.Initialize (System.Int32 port, Unity.MLAgents.CommunicatorObjects.UnityOutputProto unityOutput, Unity.MLAgents.CommunicatorObjects.UnityInputProto& unityInput) [0x00049] in <24dee94e3af949de9445383251b1e643>:0 
+  at Unity.MLAgents.RpcCommunicator.Initialize (Unity.MLAgents.CommunicatorInitParameters initParameters, Unity.MLAgents.UnityRLInitParameters& initParametersOut) [0x0004e] in <24dee94e3af949de9445383251b1e643>:0 
