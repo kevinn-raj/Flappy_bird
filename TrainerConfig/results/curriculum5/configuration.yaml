@@ -37,7 +37,7 @@ behaviors:
     init_path: null
     keep_checkpoints: 5
     checkpoint_interval: 1000
-    max_steps: 50000
+    max_steps: 150000
     time_horizon: 64
     summary_freq: 250
     threaded: false
@@ -80,7 +80,7 @@ behaviors:
     init_path: null
     keep_checkpoints: 5
     checkpoint_interval: 10000
-    max_steps: 500000
+    max_steps: 1500000
     time_horizon: 64
     summary_freq: 1000
     threaded: true
@@ -110,7 +110,7 @@ environment_parameters:
     - value:
         sampler_type: multirangeuniform
         sampler_parameters:
-          seed: 8329
+          seed: 9093
           intervals:
           - - -1.01
             - -1.0
@@ -122,12 +122,12 @@ environment_parameters:
         measure: reward
         min_lesson_length: 100
         signal_smoothing: true
-        threshold: 2.0
+        threshold: 0.6
         require_reset: false
     - value:
         sampler_type: multirangeuniform
         sampler_parameters:
-          seed: 8330
+          seed: 9094
           intervals:
           - - -1.01
             - -1.0
@@ -144,13 +144,7 @@ environment_parameters:
           - - 0.5
             - 0.501
       name: Lesson2
-      completion_criteria:
-        behavior: Solver
-        measure: progress
-        min_lesson_length: 0
-        signal_smoothing: true
-        threshold: 0.0
-        require_reset: false
+      completion_criteria: null
 checkpoint_settings:
   run_id: curriculum5
   initialize_from: null
