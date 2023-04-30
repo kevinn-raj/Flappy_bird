@@ -56,11 +56,10 @@ public class Obstacles : MonoBehaviour
         if(generator){
             genTrans = gen.GetComponent<Transform>();
     
-            float valid_reward = .001f;
+            float valid_reward = .01f;
             float punishment = -.1f;
                     // REWARD- The bottom and the top  must be inside the limits
-            if(genTrans.position.y + bottom.position.y  >= gen.bottom_maxy || 
-                genTrans.position.y + bottom.position.y <= gen.bottom_miny ||
+            if(genTrans.position.y + bottom.position.y  >= gen.bottom_maxy - gen. ||
                 genTrans.position.y + top.position.y  <= gen.top_miny ||
                 genTrans.position.y + top.position.y  >= gen.top_maxy){
                 gen.AddReward(punishment); // - reward

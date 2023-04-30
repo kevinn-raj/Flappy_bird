@@ -23,7 +23,7 @@ public class Generator : Agent
     //  minimum 1.5, Always positive
     private   float height_m; //mean
     private   float height_std; //standard deviation
-    private const float height_min=2f;
+    [HideInspector] public const float height_min=2f;
     private const float height_max=6f;
     private   float height_std_scale = 4.5f; // std = [0, 10]
 
