@@ -198,7 +198,7 @@ public class Solver : Agent
         // Reward the generator
             if(Generator){
             // End the episode of the Generator and the solver
-            Generator.GetComponent<Generator>().AddReward(generator_reward);
+            Generator.GetComponent<Generator>().AddReward(solverReward);
             }
     }
 
@@ -208,7 +208,7 @@ public class Solver : Agent
 
     private void OnTriggerEnter(Collider collidedObj)
     {      
-        // Loooooose
+        // Loooooose 
         if (collidedObj.gameObject.CompareTag("Obstacle") || collidedObj.gameObject.CompareTag("Obstacle_top") || collidedObj.gameObject.CompareTag("Obstacle_bottom"))
             {
                 float CollideReward = -1f;
