@@ -60,7 +60,7 @@ public class Solver : Agent
     private bool isDebug = true;
     
     public float normalize01(float actual, float minimum, float maximum){
-        return (actual - minimum)/(maximum - minimum);
+        return (actual - minimum)/(maximum - minimum);}
         // -1 to 1
     public float normalize(float actual, float minimum, float maximum){
         return (2*actual - minimum - maximum)/(maximum - minimum);
