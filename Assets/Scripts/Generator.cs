@@ -204,8 +204,8 @@ public class Generator : Agent
         var act = actionBuffers.ContinuousActions;
         /* Actions - And internal rewards*/
         // Turn angle in radian
-        // theta_next = ScaleAction(act[0], -theta_max, theta_max);
-        theta_next = Random.Range(-theta_max, theta_max);
+        theta_next = ScaleAction(act[0], -theta_max, theta_max);
+        //theta_next = Random.Range(-theta_max, theta_max);
         // Debug.Log(theta_next);
 
         nextHeight = ScaleAction(act[1], height_min, height_max);
