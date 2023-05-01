@@ -26,6 +26,8 @@ public class Solver : Agent
     private float ZMAX = 6;
 
     public Rigidbody rBody;
+    private const float minVelocity=-50f;
+    private const float maxVelocity=50f;
     private Vector3 startingPosition;
     [SerializeField]
     public int score = 0;
@@ -57,7 +59,10 @@ public class Solver : Agent
     [SerializeField]
     private bool isDebug = true;
     
+    public float normalize01(float actual, float minimum, float maximum){
+        return (actual - minimum)/(maximum - minimum);
 
+    }
     public override void Initialize(){
         rBody = GetComponent<Rigidbody>();
         startingPosition = transform.localPosition;
@@ -69,19 +74,23 @@ public class Solver : Agent
     public override void CollectObservations(VectorSensor sensor)
     {
         if(useObs){
-            // fetch the max Y of the ground
-            float groundMaxY = ground.GetComponent<Collider>().bounds.max.y;
-            // Set the vertical distance from the ground as observation
-            sensor.AddObservation(Mathf.Abs(groundMaxY - transform.position.y));
+        // fetch the max Y of the ground
+        float groundMaxY = ground.GetComponent<Collider>().bounds.max.y;
+        // fetch the min Y of the roof
+        float roofMinY = roof.GetComponent<Collider>().bounds.min.y;
 
-            // fetch the min Y of the roof
-            float roofMinY = roof.GetComponent<Collider>().bounds.min.y;
-            //Set the vertical distance from the roof as observation
-            sensor.AddObservation(Mathf.Abs(roofMinY - transform.position.y));
+        float obs = normalize01(groundMaxY - transform.position.y, groundMaxY, roofMinY); //normalized for stability
+        // Set the vertical distance from the ground as observation
+        sensor.AddObservation(obs);
+
+        obs = normalize01(roofMinY - transform.position.y, groundMaxY, roofMinY);  //normalized for stability
+        //Set the vertical distance from the roof as observation
+        sensor.AddObservation(obs);
 
              
         // velocity Y
-        sensor.AddObservation(rBody.velocity.y);
+        obs = normalize01(rBody.velocity.y, minVelocity, maxVelocity);
+        sensor.AddObservation(obs);
         }
     }
 
@@ -109,7 +118,6 @@ public class Solver : Agent
 
         // Action = 0 : Nothing, 1 : Jump
         act[0] = Convert.ToInt16(Input.GetButton("Jump"));
-
     }
 
     private void Jump()
@@ -147,6 +155,7 @@ public class Solver : Agent
         // Add custom gravity force 
         rBody.AddForce(Physics.gravity * gravity_multiplier);
 
+        Debug.Log(rBody.velocity.y);
         AddReward(0.0001f); // To motivate to fly
 
     }
@@ -200,7 +209,7 @@ public class Solver : Agent
     private void OnTriggerEnter(Collider collidedObj)
     {      
         // Loooooose
-        if (collidedObj.gameObject.CompareTag("Obstacle"))
+        if (collidedObj.gameObject.CompareTag("Obstacle") || collidedObj.gameObject.CompareTag("Obstacle_top") || collidedObj.gameObject.CompareTag("Obstacle_bottom"))
             {
                 float CollideReward = -1f;
                 AddReward(CollideReward);
