@@ -100,8 +100,17 @@ public class Generator : Agent
         float min_n = mean - std;
         return Random.Range(min_n, max_n);
     }
+    // 0 to 1
     public float normalize01(float actual, float minimum, float maximum){
     return (actual - minimum)/(maximum - minimum);
+    }
+    // -1 to 1
+    public float normalize(float actual, float minimum, float maximum){
+        return (2*actual - minimum - maximum)/(maximum - minimum);
+
+    }
+    public float denormalize(float actual, float minimum, float maximum){
+        return 0.5f*((maximum-minimum)*actual + minimum + maximum);
     }
 
     // Return randomly -1 or +1
@@ -158,15 +167,15 @@ public class Generator : Agent
         if(counter != 0){
         Vector3 diff = prevPipe.transform.position - transform.position;
         // distance x relative to previous pipe
-        sensor.AddObservation(normalize01(diff.x, h_distance_min, h_distance_max)); //normalize
+        sensor.AddObservation(normalize(diff.x, h_distance_min, h_distance_max)); //normalize
         // distance y relative to previous pipe
-        sensor.AddObservation(normalize01(diff.y, bottom_miny-top_maxy, top_maxy-bottom_miny)); //normalize
-        sensor.AddObservation(normalize01(theta_t, -theta_max, theta_max)); //actual angle relative to previous obstacle
+        sensor.AddObservation(normalize(diff.y, bottom_miny-top_maxy, top_maxy-bottom_miny)); //normalize
+        sensor.AddObservation(normalize(theta_t, -theta_max, theta_max)); //actual angle relative to previous obstacle
         }else{ // For the first spawn
-        sensor.AddObservation(0);
+        sensor.AddObservation(normalize(0, h_distance_min, h_distance_max));
         float firstY = Random.Range(bottom_maxy, top_miny) - transform.position.y; // random y relative to this transform
-        sensor.AddObservation(normalize01(firstY, bottom_miny-top_maxy, top_maxy-bottom_miny)); // suppose a random starting position
-        sensor.AddObservation(normalize01(Random.Range(-theta_max, theta_max),
+        sensor.AddObservation(normalize(firstY, bottom_miny-top_maxy, top_maxy-bottom_miny)); // suppose a random starting position
+        sensor.AddObservation(normalize(Random.Range(-theta_max, theta_max),
                                          -theta_max, theta_max)); //random first angle
         // Debug.Log("First obs");
         }  
@@ -204,14 +213,14 @@ public class Generator : Agent
         var act = actionBuffers.ContinuousActions;
         /* Actions - And internal rewards*/
         // Turn angle in radian
-        theta_next = ScaleAction(act[0], -theta_max, theta_max);
+        theta_next = denormalize(act[0], -theta_max, theta_max);
         //theta_next = Random.Range(-theta_max, theta_max);
         // Debug.Log(theta_next);
 
-        nextHeight = ScaleAction(act[1], height_min, height_max);
+        nextHeight = denormalize(act[1], height_min, height_max);
 
         // Vertical difference between consecutive holes, relative position
-        nextHDistance = ScaleAction(act[2], h_distance_min, h_distance_max);
+        nextHDistance = denormalize(act[2], h_distance_min, h_distance_max);
 
  
         float Dy = nextHDistance * Mathf.Tan(theta_next);
