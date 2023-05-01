@@ -61,6 +61,9 @@ public class Solver : Agent
     
     public float normalize01(float actual, float minimum, float maximum){
         return (actual - minimum)/(maximum - minimum);
+        // -1 to 1
+    public float normalize(float actual, float minimum, float maximum){
+        return (2*actual - minimum - maximum)/(maximum - minimum);
 
     }
     public override void Initialize(){
@@ -79,17 +82,17 @@ public class Solver : Agent
         // fetch the min Y of the roof
         float roofMinY = roof.GetComponent<Collider>().bounds.min.y;
 
-        float obs = normalize01(groundMaxY - transform.position.y, groundMaxY, roofMinY); //normalized for stability
+        float obs = normalize(groundMaxY - transform.position.y, groundMaxY, roofMinY); //normalized for stability
         // Set the vertical distance from the ground as observation
         sensor.AddObservation(obs);
 
-        obs = normalize01(roofMinY - transform.position.y, groundMaxY, roofMinY);  //normalized for stability
+        obs = normalize(roofMinY - transform.position.y, groundMaxY, roofMinY);  //normalized for stability
         //Set the vertical distance from the roof as observation
         sensor.AddObservation(obs);
 
              
         // velocity Y
-        obs = normalize01(rBody.velocity.y, minVelocity, maxVelocity);
+        obs = normalize(rBody.velocity.y, minVelocity, maxVelocity);
         sensor.AddObservation(obs);
         }
     }
@@ -194,9 +197,6 @@ public class Solver : Agent
     private void RewardTheGen(float solverReward){
         // Reward the generator
             if(Generator){
-            float aux = Generator.GetComponent<Generator>().aux_input;
-            float weight = 1.0f;
-            float generator_reward = weight * solverReward * aux;
             // End the episode of the Generator and the solver
             Generator.GetComponent<Generator>().AddReward(generator_reward);
             }
@@ -233,7 +233,10 @@ public class Solver : Agent
             // Reward the score
             float reward = 0.1f;
             AddReward(reward);
-            RewardTheGen(.1f * reward);
+            RewardTheGen(.1f * reward); // for making meaningfull environment
+
+            float aux = Generator.GetComponent<Generator>().aux_input;
+            RewardTheGen(aux * reward * 2f);
 
             if(Generator){ // create the next one
             Generator.GetComponent<Generator>().RequestDecision();
@@ -243,6 +246,7 @@ public class Solver : Agent
                 // only end the episode on training
                 if(isTraining){
                     EndEpisode();
+                    AddReward(1);
                 Generator.GetComponent<Generator>().EndEpisode();
                 }
             }
