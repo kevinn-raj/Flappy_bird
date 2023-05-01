@@ -100,6 +100,9 @@ public class Generator : Agent
         float min_n = mean - std;
         return Random.Range(min_n, max_n);
     }
+    public float normalize01(float actual, float minimum, float maximum){
+    return (actual - minimum)/(maximum - minimum);
+    }
 
     // Return randomly -1 or +1
     private float GetRandomSign(){
@@ -153,13 +156,18 @@ public class Generator : Agent
     public override void CollectObservations(VectorSensor sensor){
         sensor.AddObservation(aux_input); // auxiliary input
         if(counter != 0){
-        sensor.AddObservation(prevPipe.transform.position.x);
-        sensor.AddObservation(prevPipe.transform.position.y);
-        sensor.AddObservation(theta_t); //actual angle relative to previous obstacle
+        Vector3 diff = prevPipe.transform.position - transform.position;
+        // distance x relative to previous pipe
+        sensor.AddObservation(normalize01(diff.x, h_distance_min, h_distance_max)); //normalize
+        // distance y relative to previous pipe
+        sensor.AddObservation(normalize01(diff.y, bottom_miny-top_maxy, top_maxy-bottom_miny)); //normalize
+        sensor.AddObservation(normalize01(theta_t, -theta_max, theta_max)); //actual angle relative to previous obstacle
         }else{ // For the first spawn
-        sensor.AddObservation(transform.position.x);
-        sensor.AddObservation(transform.position.y + Random.Range(top_miny, bottom_maxy)); // suupose a random starting position
-        sensor.AddObservation(Random.Range(-theta_max, theta_max)); //random first angle
+        sensor.AddObservation(0);
+        float firstY = Random.Range(bottom_maxy, top_miny) - transform.position.y; // random y relative to this transform
+        sensor.AddObservation(normalize01(firstY, bottom_miny-top_maxy, top_maxy-bottom_miny)); // suppose a random starting position
+        sensor.AddObservation(normalize01(Random.Range(-theta_max, theta_max),
+                                         -theta_max, theta_max)); //random first angle
         // Debug.Log("First obs");
         }  
     }
@@ -196,7 +204,8 @@ public class Generator : Agent
         var act = actionBuffers.ContinuousActions;
         /* Actions - And internal rewards*/
         // Turn angle in radian
-        theta_next = ScaleAction(act[0], -theta_max, theta_max);
+        // theta_next = ScaleAction(act[0], -theta_max, theta_max);
+        theta_next = Random.Range(-theta_max, theta_max);
         // Debug.Log(theta_next);
 
         nextHeight = ScaleAction(act[1], height_min, height_max);
@@ -204,7 +213,7 @@ public class Generator : Agent
         // Vertical difference between consecutive holes, relative position
         nextHDistance = ScaleAction(act[2], h_distance_min, h_distance_max);
 
-
+ 
         float Dy = nextHDistance * Mathf.Tan(theta_next);
         nextPipePos =  new Vector3(nextHDistance, Dy, 0);
         // y position of the next top pipe, relative position

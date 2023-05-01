@@ -34,7 +34,7 @@ behaviors:
           memory: null
           goal_conditioning_type: hyper
           deterministic: false
-    init_path: null
+    init_path: results/curriculum5/Generator/checkpoint.pt
     keep_checkpoints: 5
     checkpoint_interval: 1000
     max_steps: 10000
@@ -77,7 +77,7 @@ behaviors:
           memory: null
           goal_conditioning_type: hyper
           deterministic: false
-    init_path: null
+    init_path: results/curriculum5/Solver/checkpoint.pt
     keep_checkpoints: 5
     checkpoint_interval: 10000
     max_steps: 100000
@@ -178,7 +178,7 @@ environment_parameters:
       completion_criteria: null
 checkpoint_settings:
   run_id: inference
-  initialize_from: null
+  initialize_from: curriculum5
   load_model: false
   resume: false
   force: true
