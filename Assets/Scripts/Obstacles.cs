@@ -44,19 +44,10 @@ public class Obstacles : MonoBehaviour
     private void Start()
     {
         if(generator)
-            gen = generator.GetComponent<Generator>();
-    }
-
-    private void Update()
-    {
-        // Move the Pipe to the left
-        transform.position += Vector3.left * speed * Time.deltaTime;
-
-        SetScoringBox();
-        if(generator){
+            gen = generator.GetComponent<Generator>();  
             genTrans = gen.GetComponent<Transform>();
     
-            float valid_reward = .01f; 
+            float valid_reward = .1f; 
             float punishment = -.1f;
                     // REWARD- The bottom and the top  must be inside the limits
             if(genTrans.position.y + bottom.position.y  >= gen.bottom_maxy - gen.Height_min ||
@@ -71,7 +62,15 @@ public class Obstacles : MonoBehaviour
                 gen.AddReward(valid_reward);
                 // Debug.Log("Valid");
             }
-        }
+    }
+
+    private void Update()
+    {
+        // Move the Pipe to the left
+        transform.position += Vector3.left * speed * Time.deltaTime;
+
+        SetScoringBox();
+
     }
 
     private void OnTriggerStay(Collider o){
