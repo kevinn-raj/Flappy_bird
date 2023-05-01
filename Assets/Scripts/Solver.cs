@@ -245,8 +245,8 @@ public class Solver : Agent
             if(score >= Generator.GetComponent<Generator>().n_obstacles){
                 // only end the episode on training
                 if(isTraining){
-                    EndEpisode();
                     AddReward(1);
+                    EndEpisode();
                 Generator.GetComponent<Generator>().EndEpisode();
                 }
             }
