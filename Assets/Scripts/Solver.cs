@@ -235,10 +235,10 @@ public class Solver : Agent
             // Reward the score
             float reward = 0.1f;
             AddReward(reward);
-            RewardTheGen(1f * reward); // for making meaningfull environment
+            RewardTheGen(.5f * reward); // for making meaningfull environment
 
             float aux = Generator.GetComponent<Generator>().aux_input;
-            RewardTheGen(aux * reward * .75f);
+            RewardTheGen(aux * reward * 1.5f);
 
             if(Generator){ // create the next one
             Generator.GetComponent<Generator>().RequestDecision();

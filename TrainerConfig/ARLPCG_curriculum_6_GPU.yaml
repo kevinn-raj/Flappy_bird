@@ -13,7 +13,7 @@ behaviors:
       buffer_size: 2048
       epsilon: 0.2
       lambd: 0.95
-      learning_rate: 0.003
+      learning_rate: 0.001
       learning_rate_schedule: linear
       num_epoch: 3    
 
@@ -44,7 +44,7 @@ behaviors:
       buffer_size: 2048
       epsilon: 0.2
       lambd: 0.95
-      learning_rate: 0.003
+      learning_rate: 0.001
       learning_rate_schedule: linear
       num_epoch: 3    
 
@@ -85,7 +85,7 @@ environment_parameters:
           behavior: Solver
           signal_smoothing: true
           min_lesson_length: 100
-          threshold: .15
+          threshold: .4
         value:
           sampler_type: multirangeuniform
           sampler_parameters:
@@ -94,7 +94,7 @@ environment_parameters:
         completion_criteria:
           measure: progress
           behavior: Solver
-          threshold: .3
+          threshold: .75
         value:
           sampler_type: multirangeuniform
           sampler_parameters:
