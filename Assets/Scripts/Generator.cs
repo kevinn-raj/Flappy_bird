@@ -21,9 +21,12 @@ public class Generator : Agent
     [Header("Generator actions")]
     // Hole height
     //  minimum 1.5, Always positive
-    private   float height_m; //mean
-    private   float height_std; //standard deviation
-    [HideInspector] public const float height_min=2f;
+    [HideInInspector] public float height_m; //mean
+    [HideInInspector] public float height_std; //standard deviation
+    [HideInInspector] public const float height_min=2f;
+    public float Height_min{
+        get {return height_min;}
+    }
     private const float height_max=6f;
     private   float height_std_scale = 4.5f; // std = [0, 10]
 
@@ -156,7 +159,7 @@ public class Generator : Agent
         }else{ // For the first spawn
         sensor.AddObservation(transform.position.x);
         sensor.AddObservation(transform.position.y + Random.Range(top_miny, bottom_maxy)); // suupose a random starting position
-        sensor.AddObservation(0f); //suppose angle relative to previous obstacle is 0
+        sensor.AddObservation(Random.Range(-theta_max, theta_max)); //random first angle
         // Debug.Log("First obs");
         }  
     }
@@ -210,6 +213,11 @@ public class Generator : Agent
         nextBottomY = -nextHeight/2;
         CreateWithAgent();
 
+        // For statistics
+        var statsRecorder = Academy.Instance.StatsRecorder;
+            statsRecorder.Add("theta", theta_next);
+            statsRecorder.Add("height", nextHeight);
+            statsRecorder.Add("distance", nextHDistance);
     }
 
     // Generate with the Generator Agent
