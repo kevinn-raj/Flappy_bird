@@ -194,11 +194,11 @@ public class Solver : Agent
         
         OnReset?.Invoke();
     }
-    private void RewardTheGen(float solverReward){
+    private void RewardTheGen(float r){
         // Reward the generator
             if(Generator){
             // End the episode of the Generator and the solver
-            Generator.GetComponent<Generator>().AddReward(solverReward);
+            Generator.GetComponent<Generator>().AddReward(r);
             }
     }
 
@@ -209,19 +209,21 @@ public class Solver : Agent
     private void OnTriggerEnter(Collider collidedObj)
     {      
         // Loooooose 
-        if (collidedObj.gameObject.CompareTag("Obstacle") || collidedObj.gameObject.CompareTag("Obstacle_top") || collidedObj.gameObject.CompareTag("Obstacle_bottom"))
+        if (collidedObj.gameObject.CompareTag("Obstacle") || 
+            collidedObj.gameObject.CompareTag("Obstacle_top") ||
+            collidedObj.gameObject.CompareTag("Obstacle_bottom"))
             {
                 float CollideReward = -1f;
                 AddReward(CollideReward);
-                RewardTheGen(CollideReward);
                 EndEpisode();
                 Generator.GetComponent<Generator>().EndEpisode();
             }
-        // else if (collidedObj.gameObject.CompareTag("Limit"))
-        // {
-        //     AddReward(-0.001f); // To motivate not to hit the roof
-
-        // }
+        else if (collidedObj.gameObject.CompareTag("Obstacle_top") ||
+            collidedObj.gameObject.CompareTag("Obstacle_bottom"))
+        { //If solver hits the pipes only. Not the ground
+            RewardTheGen(-1f);
+            Generator.GetComponent<Generator>().EndEpisode();
+        }
         // SCOREEEEEEEEEEEEE!
         else if (collidedObj.gameObject.CompareTag("Scoring"))
         {
@@ -233,10 +235,10 @@ public class Solver : Agent
             // Reward the score
             float reward = 0.1f;
             AddReward(reward);
-            RewardTheGen(.1f * reward); // for making meaningfull environment
+            RewardTheGen(.5f * reward); // for making meaningfull environment
 
             float aux = Generator.GetComponent<Generator>().aux_input;
-            RewardTheGen(aux * reward * 2f);
+            RewardTheGen(aux * reward * 1.5f);
 
             if(Generator){ // create the next one
             Generator.GetComponent<Generator>().RequestDecision();
