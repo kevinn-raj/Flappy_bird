@@ -215,15 +215,14 @@ public class Solver : Agent
             {
                 float CollideReward = -1f;
                 AddReward(CollideReward);
-                EndEpisode();
+            if (collidedObj.gameObject.CompareTag("Obstacle_top") ||
+            collidedObj.gameObject.CompareTag("Obstacle_bottom"))
+            { //If solver hits the pipes only. Not the ground
+                RewardTheGen(-1f);
                 Generator.GetComponent<Generator>().EndEpisode();
             }
-        else if (collidedObj.gameObject.CompareTag("Obstacle_top") ||
-            collidedObj.gameObject.CompareTag("Obstacle_bottom"))
-        { //If solver hits the pipes only. Not the ground
-            RewardTheGen(-1f);
-            Generator.GetComponent<Generator>().EndEpisode();
-        }
+                EndEpisode();
+        } 
         // SCOREEEEEEEEEEEEE!
         else if (collidedObj.gameObject.CompareTag("Scoring"))
         {
@@ -235,7 +234,7 @@ public class Solver : Agent
             // Reward the score
             float reward = 0.1f;
             AddReward(reward);
-            RewardTheGen(.5f * reward); // for making meaningfull environment
+            RewardTheGen(.2f); // for making meaningfull environment
 
             float aux = Generator.GetComponent<Generator>().aux_input;
             RewardTheGen(aux * reward * 1.5f);

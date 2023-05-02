@@ -1,3 +1,4 @@
+using System; 
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -12,6 +13,7 @@ public class Generator : Agent
 
     public Solver solver;
     [Header("Auxiliary Input")]
+    [Tooltip("Axu. input, n_obstacles")]
     public bool isDrivenByCurriculum = true;
     public bool randomizeAuxInput = true;
     [Range(-3f,3f)]    public float aux_input=1f;
@@ -155,10 +157,13 @@ public class Generator : Agent
         // To store the position of the previous obstacle, relative to the generator transform
         prevPipe = gameObject;
         pipe = gameObject;
-        
+         
         // aux_input as environment parameters // Curriculum
-        if(isDrivenByCurriculum)
+        if (isDrivenByCurriculum)
+        {
         aux_input = Academy.Instance.EnvironmentParameters.GetWithDefault("aux_input", 0.0f);
+        n_obstacles = Convert.ToInt16(Academy.Instance.EnvironmentParameters.GetWithDefault("n_obstacles", 10f));
+        }
         // randomize the aux input, choose one of the values
         else if(randomizeAuxInput) aux_input = auxInputs[Random.Range(0, nAuxInputs)];
     }
