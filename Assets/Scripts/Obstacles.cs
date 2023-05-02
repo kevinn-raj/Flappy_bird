@@ -47,11 +47,11 @@ public class Obstacles : MonoBehaviour
             gen = generator.GetComponent<Generator>();  
             genTrans = gen.GetComponent<Transform>();
     
-            float valid_reward = .1f; 
+            float valid_reward = .2f; 
             float punishment = -.1f;
                     // REWARD- The bottom and the top  must be inside the limits
-            if(genTrans.position.y + bottom.position.y  >= gen.bottom_maxy - gen.Height_min ||
-                genTrans.position.y + top.position.y  <= gen.top_miny + gen.Height_min){
+            if(genTrans.position.y + transform.position.y  >= gen.bottom_maxy ||
+                genTrans.position.y + transform.position.y  <= gen.top_miny){
                 gen.AddReward(punishment); // - reward
                 // Reset the episode after mistakes or not
                 // Comment the following line if not
@@ -75,15 +75,9 @@ public class Obstacles : MonoBehaviour
 
     private void OnTriggerStay(Collider o){
          if (o.gameObject.CompareTag("Destroyer")){
-
-            // Destroy the children then the parent
-            // foreach(Transform child in transform){
-            //     Destroy(child.gameObject);
-            // }
-
             // Destroy this gameObject and its children
             gameObject.SetActive(false);
-            Destroy(gameObject, 10f); // Destroy after a minute
+            Destroy(gameObject, 10f); // Destroy after 10s
          }
     }
 
