@@ -47,21 +47,21 @@ public class Obstacles : MonoBehaviour
         if(generator)
             gen = generator.GetComponent<Generator>();  
     
-            float valid_reward = 1f; 
-            float punishment = -1f;
-                    // REWARD- The bottom and the top  must be inside the limits
-            if(origin_obj.transform.position.y + transform.position.y  >= gen.top_maxy ||
-                origin_obj.transform.position.y + transform.position.y  <= gen.bottom_miny){
-                gen.AddReward(punishment); // - reward
-                // Reset the episode after mistakes or not
-                // Comment the following line if not
-                if(gen.endEpisodeOnWrong)
-                    gen.EndEpisode(); 
-            }else{  
-                // + reward
-                gen.AddReward(valid_reward);
-                // Debug.Log("Valid");
-            }
+            //float valid_reward = 1f; 
+            //float punishment = -1f;
+            //        // REWARD- The bottom and the top  must be inside the limits
+            //if(origin_obj.transform.position.y + transform.position.y  >= gen.top_maxy ||
+            //    origin_obj.transform.position.y + transform.position.y  <= gen.bottom_miny){
+            //    gen.AddReward(punishment); // - reward
+            //    // Reset the episode after mistakes or not
+            //    // Comment the following line if not
+            //    if(gen.endEpisodeOnWrong)
+            //        gen.EndEpisode(); 
+            //}else{  
+            //    // + reward
+            //    gen.AddReward(valid_reward);
+            //    // Debug.Log("Valid");
+            //}
     }
 
     private void Update()

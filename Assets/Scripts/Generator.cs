@@ -290,6 +290,18 @@ public class Generator : Agent
         }
     }
 
+    private void OnTriggerStay(Collider collidedObj)
+    {
+        float punishment = -1f;
+        if (collidedObj.gameObject.CompareTag("Limit") || collidedObj.gameObject.CompareTag("Ground"))
+        {
+               AddReward(punishment); // - reward
+             // Reset the episode after mistakes or not
+             // Comment the following line if not
+                if (endEpisodeOnWrong)
+                    EndEpisode();
+        }
+    }
 }
 
 

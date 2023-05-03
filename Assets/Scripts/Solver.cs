@@ -209,7 +209,7 @@ public class Solver : Agent
     private void OnTriggerEnter(Collider collidedObj)
     {      
         // Loooooose 
-        if (collidedObj.gameObject.CompareTag("Obstacle") || 
+        if (collidedObj.gameObject.CompareTag("Ground") || 
             collidedObj.gameObject.CompareTag("Obstacle_top") ||
             collidedObj.gameObject.CompareTag("Obstacle_bottom"))
             {
@@ -232,12 +232,12 @@ public class Solver : Agent
             var statsRecorder = Academy.Instance.StatsRecorder;
             statsRecorder.Add("Score", score);
             // Reward the score
-            float reward = 0.1f;
+            float reward = 1f;
             AddReward(reward);
-            RewardTheGen(.2f); // for making meaningfull environment
+            RewardTheGen(.5f); // for making meaningfull environment
 
             float aux = Generator.GetComponent<Generator>().aux_input;
-            RewardTheGen(aux * reward * 1.5f);
+            RewardTheGen(aux * reward * 1f);
 
             if(Generator && Generator.GetComponent<Generator>().createOnAchievedOnly)
             { // create the next one
