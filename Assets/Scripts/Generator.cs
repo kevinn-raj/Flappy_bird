@@ -142,7 +142,7 @@ public class Generator : Agent
         // In case no obstacle in the scene
         if (Obstacles_lst != null)
         {
-            if (Obstacles_lst.Count == 0)
+            if (Obstacles_lst.Count == 0 && transform.parent.GetComponentInChildren<Solver>())
             {
                 transform.parent.GetComponentInChildren<Solver>().EndEpisode();
             }
