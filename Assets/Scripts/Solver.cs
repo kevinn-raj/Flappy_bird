@@ -158,7 +158,7 @@ public class Solver : Agent
         // Add custom gravity force 
         rBody.AddForce(Physics.gravity * gravity_multiplier);
 
-        Debug.Log(rBody.velocity.y);
+        //Debug.Log(rBody.velocity.y);
         AddReward(0.0001f); // To motivate to fly
 
     }
@@ -209,21 +209,20 @@ public class Solver : Agent
     private void OnTriggerEnter(Collider collidedObj)
     {      
         // Loooooose 
-        if (collidedObj.gameObject.CompareTag("Obstacle") || 
+        if (collidedObj.gameObject.CompareTag("Ground") || 
             collidedObj.gameObject.CompareTag("Obstacle_top") ||
             collidedObj.gameObject.CompareTag("Obstacle_bottom"))
             {
                 float CollideReward = -1f;
                 AddReward(CollideReward);
-                EndEpisode();
+            if (collidedObj.gameObject.CompareTag("Obstacle_top") ||
+            collidedObj.gameObject.CompareTag("Obstacle_bottom"))
+            { //If solver hits the pipes only. Not the ground
+                RewardTheGen(-1f);
                 Generator.GetComponent<Generator>().EndEpisode();
             }
-        else if (collidedObj.gameObject.CompareTag("Obstacle_top") ||
-            collidedObj.gameObject.CompareTag("Obstacle_bottom"))
-        { //If solver hits the pipes only. Not the ground
-            RewardTheGen(-1f);
-            Generator.GetComponent<Generator>().EndEpisode();
-        }
+                EndEpisode();
+        } 
         // SCOREEEEEEEEEEEEE!
         else if (collidedObj.gameObject.CompareTag("Scoring"))
         {
@@ -233,14 +232,18 @@ public class Solver : Agent
             var statsRecorder = Academy.Instance.StatsRecorder;
             statsRecorder.Add("Score", score);
             // Reward the score
-            float reward = 0.1f;
+            float reward = 1f;
             AddReward(reward);
-            RewardTheGen(.5f * reward); // for making meaningfull environment
+            RewardTheGen(.5f); // for making meaningfull environment
 
             float aux = Generator.GetComponent<Generator>().aux_input;
-            RewardTheGen(aux * reward * 1.5f);
+            if(aux >=0f)
+                RewardTheGen(aux * reward * .3f);
+            else RewardTheGen(aux * reward * .7f);
 
-            if(Generator){ // create the next one
+
+            if (Generator && Generator.GetComponent<Generator>().createOnAchievedOnly)
+            { // create the next one
             Generator.GetComponent<Generator>().RequestDecision();
                     }
             // Goal reached

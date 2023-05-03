@@ -8,6 +8,7 @@ public class Obstacles : MonoBehaviour
     public GameObject generator;
     private Generator gen;
     Transform genTrans;
+    public GameObject origin_obj;
 
     [SerializeField]
     private float distance; // distance between the top and the bottom pipes
@@ -45,23 +46,22 @@ public class Obstacles : MonoBehaviour
     {
         if(generator)
             gen = generator.GetComponent<Generator>();  
-            genTrans = gen.GetComponent<Transform>();
     
-            float valid_reward = .1f; 
-            float punishment = -.1f;
-                    // REWARD- The bottom and the top  must be inside the limits
-            if(genTrans.position.y + bottom.position.y  >= gen.bottom_maxy - gen.Height_min ||
-                genTrans.position.y + top.position.y  <= gen.top_miny + gen.Height_min){
-                gen.AddReward(punishment); // - reward
-                // Reset the episode after mistakes or not
-                // Comment the following line if not
-                if(gen.endEpisodeOnWrong)
-                    gen.EndEpisode(); 
-            }else{  
-                // + reward
-                gen.AddReward(valid_reward);
-                // Debug.Log("Valid");
-            }
+            //float valid_reward = 1f; 
+            //float punishment = -1f;
+            //        // REWARD- The bottom and the top  must be inside the limits
+            //if(origin_obj.transform.position.y + transform.position.y  >= gen.top_maxy ||
+            //    origin_obj.transform.position.y + transform.position.y  <= gen.bottom_miny){
+            //    gen.AddReward(punishment); // - reward
+            //    // Reset the episode after mistakes or not
+            //    // Comment the following line if not
+            //    if(gen.endEpisodeOnWrong)
+            //        gen.EndEpisode(); 
+            //}else{  
+            //    // + reward
+            //    gen.AddReward(valid_reward);
+            //    // Debug.Log("Valid");
+            //}
     }
 
     private void Update()
@@ -75,15 +75,9 @@ public class Obstacles : MonoBehaviour
 
     private void OnTriggerStay(Collider o){
          if (o.gameObject.CompareTag("Destroyer")){
-
-            // Destroy the children then the parent
-            // foreach(Transform child in transform){
-            //     Destroy(child.gameObject);
-            // }
-
             // Destroy this gameObject and its children
             gameObject.SetActive(false);
-            Destroy(gameObject, 10f); // Destroy after a minute
+            Destroy(gameObject, 10f); // Destroy after 10s
          }
     }
 
