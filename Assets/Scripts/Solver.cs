@@ -238,8 +238,8 @@ public class Solver : Agent
 
             float aux = Generator.GetComponent<Generator>().aux_input;
             if(aux >=0f)
-                RewardTheGen(aux * reward * .3f);
-            else RewardTheGen(aux * reward * .7f);
+                RewardTheGen(aux * reward * .5f);
+            else RewardTheGen(aux * reward * .4f);
 
 
             if (Generator && Generator.GetComponent<Generator>().createOnAchievedOnly)
