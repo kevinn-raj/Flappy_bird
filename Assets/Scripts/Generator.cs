@@ -21,6 +21,7 @@ public class Generator : Agent
     private float[] auxInputs = new float[nAuxInputs]{-1f, -.5f, 0f, .5f, 1f};
 
     [Header("Generator actions")]
+    public bool createOnAchievedOnly = true; // Only create when the solver has achieved the current one
     // Hole height
     //  minimum 1.5, Always positive
     [HideInInspector] public float height_m; //mean
@@ -74,6 +75,7 @@ public class Generator : Agent
     [Header("Parameters")]
     [Min(0)]    public int n_obstacles = 10;
     public GameObject prefab;
+    public GameObject origin;
 
     /* Limits and Constraints */
     [HideInInspector] public float top_maxy = 4.8f;
@@ -138,10 +140,16 @@ public class Generator : Agent
     
     public void FixedUpdate(){
         // In case no obstacle in the scene
-        if(Obstacles_lst != null){
-            if(Obstacles_lst.Count == 0){ 
+        if (Obstacles_lst != null)
+        {
+            if (Obstacles_lst.Count == 0)
+            {
                 transform.parent.GetComponentInChildren<Solver>().EndEpisode();
             }
+        }
+        if (!createOnAchievedOnly) // can spawn any time without the solver
+        {
+            RequestDecision();
         }
     }
 
@@ -153,7 +161,8 @@ public class Generator : Agent
         }
         Obstacles_lst = new List<GameObject>();
         counter = 0;
-
+        // Reset the generator's position
+        transform.localPosition = new Vector3(transform.localPosition.x, 0, transform.localPosition.z);
         // To store the position of the previous obstacle, relative to the generator transform
         prevPipe = gameObject;
         pipe = gameObject;
@@ -178,10 +187,9 @@ public class Generator : Agent
         sensor.AddObservation(normalize(theta_t, -theta_max, theta_max)); //actual angle relative to previous obstacle
         }else{ // For the first spawn
         sensor.AddObservation(normalize(0, h_distance_min, h_distance_max));
-        float firstY = Random.Range(bottom_maxy, top_miny) - transform.position.y; // random y relative to this transform
-        sensor.AddObservation(normalize(firstY, bottom_miny-top_maxy, top_maxy-bottom_miny)); // suppose a random starting position
-        sensor.AddObservation(normalize(Random.Range(-theta_max, theta_max),
-                                         -theta_max, theta_max)); //random first angle
+        //float firstY = Random.Range(bottom_maxy, top_miny) - transform.position.y; // random y relative to this transform
+        sensor.AddObservation(normalize(0, bottom_miny-top_maxy, top_maxy-bottom_miny)); // suppose a random starting position
+        sensor.AddObservation(normalize(0, -theta_max, theta_max)); //random first angle
         // Debug.Log("First obs");
         }  
     }
@@ -217,7 +225,7 @@ public class Generator : Agent
     public override void OnActionReceived(ActionBuffers actionBuffers){
         var act = actionBuffers.ContinuousActions;
         /* Actions - And internal rewards*/
-        // Turn angle in radian
+        // Turn angle in radian, from [-1, 1]
         theta_next = denormalize(act[0], -theta_max, theta_max);
         //theta_next = Random.Range(-theta_max, theta_max);
         // Debug.Log(theta_next);
@@ -233,9 +241,8 @@ public class Generator : Agent
         // y position of the next top pipe, relative position
         nextTopY =  nextHeight/2; // local coord
         // y position of the next bottom pipe, relative position
-        nextBottomY = -nextHeight/2;
+        nextBottomY = -nextHeight/2; // move this transform to the next created obstacles
         CreateWithAgent();
-
         // For statistics
         var statsRecorder = Academy.Instance.StatsRecorder;
             statsRecorder.Add("theta", theta_next);
@@ -246,9 +253,7 @@ public class Generator : Agent
     // Generate with the Generator Agent
     public void CreateWithAgent(){
         if(!isHeuristic){ /*Execute only in Inference mode*/
-
-
-        /*Spawn only if it is less than a certain number and the solver has achieved the previous one*/
+        /*Spawn only if it is less than a certain number*/
         if(counter <= n_obstacles){
             Transform top, bottom;
             Vector3 initPos;
@@ -261,10 +266,11 @@ public class Generator : Agent
             // Obstacle speed
             pipe.GetComponent<Obstacles>().speed = obst_speed;
             pipe.GetComponent<Obstacles>().generator = gameObject;
+                pipe.GetComponent<Obstacles>().origin_obj = origin;
 
-            /* Constraints - Rewarding the Generator*/
-            // Internal Reward
-            top = pipe.transform.Find("Top Pipe");
+                /* Constraints - Rewarding the Generator*/
+                // Internal Reward
+                top = pipe.transform.Find("Top Pipe");
             bottom = pipe.transform.Find("Bottom Pipe");
 
             // Position the top and bottom pipes, local positions
@@ -273,15 +279,14 @@ public class Generator : Agent
                     
              // Add the created obstacle to the list of all generated obstacles
             Obstacles_lst.Add(pipe);
-    
-
-
             counter++; // increment the counter
             //Debug.Log(counter);
             latestAchieved = false;
             prevPipe = pipe;
             theta_t = theta_next;
             }
+    //Lastly move the generator's y to the created obstacles' y
+            transform.position += new Vector3(0, nextPipePos.y, 0);
         }
     }
 
