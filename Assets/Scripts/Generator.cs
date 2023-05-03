@@ -297,9 +297,9 @@ public class Generator : Agent
         {
                AddReward(punishment); // - reward
              // Reset the episode after mistakes or not
-             // Comment the following line if not
                 if (endEpisodeOnWrong)
                     EndEpisode();
+            Debug.Log("Hit");
         }
     }
 }

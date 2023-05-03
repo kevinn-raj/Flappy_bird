@@ -158,7 +158,7 @@ public class Solver : Agent
         // Add custom gravity force 
         rBody.AddForce(Physics.gravity * gravity_multiplier);
 
-        Debug.Log(rBody.velocity.y);
+        //Debug.Log(rBody.velocity.y);
         AddReward(0.0001f); // To motivate to fly
 
     }
@@ -237,7 +237,7 @@ public class Solver : Agent
             RewardTheGen(.5f); // for making meaningfull environment
 
             float aux = Generator.GetComponent<Generator>().aux_input;
-            RewardTheGen(aux * reward * .5f);
+            RewardTheGen(aux * reward * .3f);
 
             if(Generator && Generator.GetComponent<Generator>().createOnAchievedOnly)
             { // create the next one
