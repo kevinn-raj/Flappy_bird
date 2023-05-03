@@ -237,9 +237,12 @@ public class Solver : Agent
             RewardTheGen(.5f); // for making meaningfull environment
 
             float aux = Generator.GetComponent<Generator>().aux_input;
-            RewardTheGen(aux * reward * .3f);
+            //if(aux >=0f) 
+                RewardTheGen(aux * reward * .3f);
+            //else RewardTheGen(aux * reward * .7f);
 
-            if(Generator && Generator.GetComponent<Generator>().createOnAchievedOnly)
+
+            if (Generator && Generator.GetComponent<Generator>().createOnAchievedOnly)
             { // create the next one
             Generator.GetComponent<Generator>().RequestDecision();
                     }

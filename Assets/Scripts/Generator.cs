@@ -299,7 +299,7 @@ public class Generator : Agent
              // Reset the episode after mistakes or not
                 if (endEpisodeOnWrong)
                     EndEpisode();
-            Debug.Log("Hit");
+            //Debug.Log("Hit");
         }
     }
 }
