@@ -115,16 +115,36 @@ environment_parameters:
     curriculum:
       - name: Lesson1 # The '-' is important as this is a list
         completion_criteria:
-          measure: reward
+          measure: progress
           behavior: Solver
           signal_smoothing: true
           min_lesson_length: 100
-          threshold: 10
+          threshold: .25
         value:
           sampler_type: multirangeuniform
           sampler_parameters:
             intervals: [[1, 1]]
       - name: Lesson2 # The '-' is important as this is a list
+        completion_criteria:
+          measure: progress
+          behavior: Solver
+          threshold: .5
+        value:
+          sampler_type: multirangeuniform
+          sampler_parameters:
+            intervals: [[-1, -1]]
+      - name: Lesson1a # The '-' is important as this is a list
+        completion_criteria:
+          measure: progress
+          behavior: Solver
+          signal_smoothing: true
+          min_lesson_length: 100
+          threshold: .75
+        value:
+          sampler_type: multirangeuniform
+          sampler_parameters:
+            intervals: [[1, 1]]
+      - name: Lesson2a # The '-' is important as this is a list
         completion_criteria:
           measure: progress
           behavior: Solver
