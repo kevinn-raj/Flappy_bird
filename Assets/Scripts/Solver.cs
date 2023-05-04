@@ -159,7 +159,7 @@ public class Solver : Agent
         rBody.AddForce(Physics.gravity * gravity_multiplier);
 
         //Debug.Log(rBody.velocity.y);
-        AddReward(0.0001f); // To motivate to fly
+        AddReward(0.01f); // To motivate to stay alive
 
     }
     public void LateUpdate(){
@@ -236,7 +236,7 @@ public class Solver : Agent
             // Reward the score
             float reward = .1f;
             AddReward(reward);
-            RewardTheGen(.02f); // for making meaningfull environment
+            RewardTheGen(.2f); // for making meaningfull environment
 
             if (Generator && Generator.GetComponent<Generator>().createOnAchievedOnly)
             { // create the next one
