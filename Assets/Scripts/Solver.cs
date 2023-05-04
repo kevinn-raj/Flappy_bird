@@ -220,7 +220,7 @@ public class Solver : Agent
             { //If solver hits the pipes only. Not the ground
                 float aux = Generator.GetComponent<Generator>().aux_input;
                 float CumReward = GetCumulativeReward();
-                RewardTheGen(-aux * CumReward * .5f);
+                RewardTheGen(-aux * CumReward * 1f);
                 Generator.GetComponent<Generator>().EndEpisode();
             }
                 EndEpisode();
@@ -234,9 +234,9 @@ public class Solver : Agent
             var statsRecorder = Academy.Instance.StatsRecorder;
             statsRecorder.Add("Score", score);
             // Reward the score
-            float reward = 1f;
+            float reward = .1f;
             AddReward(reward);
-            RewardTheGen(.2f); // for making meaningfull environment
+            RewardTheGen(.02f); // for making meaningfull environment
 
             if (Generator && Generator.GetComponent<Generator>().createOnAchievedOnly)
             { // create the next one
@@ -246,9 +246,8 @@ public class Solver : Agent
             if(score >= Generator.GetComponent<Generator>().n_obstacles){
                 // only end the episode on training
                 if(isTraining){ // For reaching the goal
-                    AddReward(3f);
+                    AddReward(1f);
                     EndEpisode();
-                    RewardTheGen(3f);
                 Generator.GetComponent<Generator>().EndEpisode();
                 }
             }
