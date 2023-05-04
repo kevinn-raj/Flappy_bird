@@ -218,7 +218,9 @@ public class Solver : Agent
             if (collidedObj.gameObject.CompareTag("Obstacle_top") ||
             collidedObj.gameObject.CompareTag("Obstacle_bottom"))
             { //If solver hits the pipes only. Not the ground
-                RewardTheGen(-1f);
+                float aux = Generator.GetComponent<Generator>().aux_input;
+                float CumReward = GetCumulativeReward();
+                RewardTheGen(-aux * CumReward * 1f);
                 Generator.GetComponent<Generator>().EndEpisode();
             }
                 EndEpisode();
@@ -232,15 +234,9 @@ public class Solver : Agent
             var statsRecorder = Academy.Instance.StatsRecorder;
             statsRecorder.Add("Score", score);
             // Reward the score
-            float reward = 1f;
+            float reward = .1f;
             AddReward(reward);
-            RewardTheGen(.5f); // for making meaningfull environment
-
-            float aux = Generator.GetComponent<Generator>().aux_input;
-            if(aux >=0f)
-                RewardTheGen(aux * reward * .3f);
-            else RewardTheGen(aux * reward * .7f);
-
+            RewardTheGen(.02f); // for making meaningfull environment
 
             if (Generator && Generator.GetComponent<Generator>().createOnAchievedOnly)
             { // create the next one
@@ -249,8 +245,8 @@ public class Solver : Agent
             // Goal reached
             if(score >= Generator.GetComponent<Generator>().n_obstacles){
                 // only end the episode on training
-                if(isTraining){
-                    AddReward(1);
+                if(isTraining){ // For reaching the goal
+                    AddReward(1f);
                     EndEpisode();
                 Generator.GetComponent<Generator>().EndEpisode();
                 }

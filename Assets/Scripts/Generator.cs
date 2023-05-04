@@ -63,6 +63,8 @@ public class Generator : Agent
     private float obst_speed_max = 6f;
 
     /* Observations */
+    public GameObject ground;
+    public GameObject roof;
     // Previous obstacle's position
     private List<float> previous = new List<float>();
     private GameObject prevPipe;
@@ -142,7 +144,7 @@ public class Generator : Agent
         // In case no obstacle in the scene
         if (Obstacles_lst != null)
         {
-            if (Obstacles_lst.Count == 0 && transform.parent.GetComponentInChildren<Solver>())
+            if (Obstacles_lst.Count == 0 && transform.parent.GetComponentInChildren<Solver>() != null)
             {
                 transform.parent.GetComponentInChildren<Solver>().EndEpisode();
             }
@@ -191,7 +193,19 @@ public class Generator : Agent
         sensor.AddObservation(normalize(0, bottom_miny-top_maxy, top_maxy-bottom_miny)); // suppose a random starting position
         sensor.AddObservation(normalize(0, -theta_max, theta_max)); //random first angle
         // Debug.Log("First obs");
-        }  
+        }
+        // fetch the max Y of the ground
+        float groundMaxY = ground.GetComponent<Collider>().bounds.max.y;
+        // fetch the min Y of the roof
+        float roofMinY = roof.GetComponent<Collider>().bounds.min.y;
+
+        float obs = normalize(groundMaxY - transform.position.y, groundMaxY, roofMinY); //normalized for stability
+        // Set the vertical distance from the ground as observation
+        sensor.AddObservation(obs);
+
+        obs = normalize(roofMinY - transform.position.y, groundMaxY, roofMinY);  //normalized for stability
+        //Set the vertical distance from the roof as observation
+        sensor.AddObservation(obs);
     }
 
     public override void Heuristic(in ActionBuffers actionsOut){
