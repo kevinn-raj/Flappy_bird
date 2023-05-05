@@ -238,12 +238,15 @@ public class Generator : Agent
     }
 
     public override void OnActionReceived(ActionBuffers actionBuffers){
+        // fetch the max Y of the ground
+        float groundMaxY = ground.GetComponent<Collider>().bounds.max.y;
+        // fetch the min Y of the roof
+        float roofMinY = roof.GetComponent<Collider>().bounds.min.y;
+
         var act = actionBuffers.ContinuousActions;
         /* Actions - And internal rewards*/
-        // Turn angle in radian, from [-1, 1]
-        theta_next = denormalize(act[0], -theta_max, theta_max);
-        //theta_next = Random.Range(-theta_max, theta_max);
-        // Debug.Log(theta_next);
+        /*Local next_Y coordinate relative to this object*/
+        float nextYdifference =  ScaleAction(act[0], -(roofMinY-groundMaxY)/2, (roofMinY-groundMaxY)/2);
 
         nextHeight = denormalize(act[1], height_min, height_max);
 
@@ -251,8 +254,9 @@ public class Generator : Agent
         nextHDistance = denormalize(act[2], h_distance_min, h_distance_max);
 
  
-        float Dy = nextHDistance * Mathf.Tan(theta_next);
-        nextPipePos =  new Vector3(nextHDistance, Dy, 0);
+        // float Dy = nextHDistance * Mathf.Tan(theta_next);
+        theta_next = Mathf.Atan(nextYdifference/nextHDistance);
+        nextPipePos =  new Vector3(nextHDistance, nextYdifference, 0);
         // y position of the next top pipe, relative position
         nextTopY =  nextHeight/2; // local coord
         // y position of the next bottom pipe, relative position
@@ -263,6 +267,7 @@ public class Generator : Agent
             statsRecorder.Add("theta", theta_next);
             statsRecorder.Add("height", nextHeight);
             statsRecorder.Add("distance", nextHDistance);
+            statsRecorder.Add("Y_difference", nextYdifference);
     }
 
     // Generate with the Generator Agent
@@ -310,7 +315,7 @@ public class Generator : Agent
         float punishment = -1f;
         if (collidedObj.gameObject.CompareTag("Limit") || collidedObj.gameObject.CompareTag("Ground"))
         {
-               AddReward(punishment); // - reward
+               // AddReward(punishment); // - reward
              // Reset the episode after mistakes or not
                 if (endEpisodeOnWrong)
                     EndEpisode();
