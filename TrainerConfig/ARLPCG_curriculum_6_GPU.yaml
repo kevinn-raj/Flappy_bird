@@ -8,12 +8,12 @@ behaviors:
     checkpoint_interval: 1000
 
     hyperparameters:
-      batch_size: 128
-      beta: 0.0003
-      buffer_size: 2048
+      batch_size: 2048
+      beta: 0.007
+      buffer_size: 4096
       epsilon: 0.2
       lambd: 0.95
-      learning_rate: 0.0003
+      learning_rate: 0.003
       learning_rate_schedule: linear
       num_epoch: 3    
 
@@ -22,7 +22,7 @@ behaviors:
       vis_encode_type: simple
       num_layers: 3
       normalize: false
-      hidden_units: 256
+      hidden_units: 64
       memory: null
 
     reward_signals:
@@ -39,12 +39,12 @@ behaviors:
     checkpoint_interval: 10000
 
     hyperparameters:
-      batch_size: 128
-      beta: 0.0003
+      batch_size: 32
+      beta: 0.0007
       buffer_size: 2048
       epsilon: 0.2
       lambd: 0.95
-      learning_rate: 0.0003
+      learning_rate: 0.002
       learning_rate_schedule: linear
       num_epoch: 3    
 
@@ -53,7 +53,7 @@ behaviors:
       vis_encode_type: simple
       num_layers: 2
       normalize: false
-      hidden_units: 256
+      hidden_units: 128
       memory: null
 
 
@@ -66,7 +66,7 @@ engine_settings:
   width: 84
   height: 84
   quality_level: 5
-  time_scale: 7
+  time_scale: 3
   target_frame_rate: -1
   capture_frame_rate: 60
   
@@ -74,29 +74,23 @@ environment_parameters:
   n_obstacles:
     curriculum:
       - name: Lesson1 # The '-' is important as this is a list
-        completion_criteria:
-          measure: reward
-          behavior: Generator
-          signal_smoothing: true
-          min_lesson_length: 100
-          threshold: .2
-        value: 4
-      - name: Lesson2 # The '-' is important as this is a list
-        completion_criteria:
-          measure: reward
-          behavior: Generator
-          signal_smoothing: true
-          min_lesson_length: 100
-          threshold: .4
-        value: 6
-      - name: Lesson3 # The '-' is important as this is a list
-        completion_criteria:
-          measure: reward
-          behavior: Generator
-          signal_smoothing: true
-          min_lesson_length: 100
-          threshold: .5
-        value: 10
+        value: 40
+#      - name: Lesson2 # The '-' is important as this is a list
+#        completion_criteria:
+#          measure: reward
+#          behavior: Generator
+#          signal_smoothing: true
+#          min_lesson_length: 100
+#          threshold: .4
+#        value: 6
+#      - name: Lesson3 # The '-' is important as this is a list
+#        completion_criteria:
+#          measure: reward
+#          behavior: Generator
+#          signal_smoothing: true
+#          min_lesson_length: 100
+#          threshold: .5
+#        value: 10
 # To randomize an environment parameter
 #  aux_input:
 #    sampler_type: uniform
@@ -109,20 +103,20 @@ environment_parameters:
         completion_criteria:
           measure: progress
           behavior: Solver
-          threshold: .4
-        value:
-          sampler_type: multirangeuniform
-          sampler_parameters:
-            intervals: [[-1, -1]]
-      - name: Lesson2 # The '-' is important as this is a list
-        completion_criteria:
-          measure: progress
-          behavior: Solver
-          threshold: .8
+          threshold: .7
         value:
           sampler_type: multirangeuniform
           sampler_parameters:
             intervals: [[1, 1]]
+      - name: Lesson2 # The '-' is important as this is a list
+        completion_criteria:
+          measure: progress
+          behavior: Solver
+          threshold: .65
+        value:
+          sampler_type: multirangeuniform
+          sampler_parameters:
+            intervals: [[-1, -1]]
 #      - name: Lesson4 # The '-' is important as this is a list
 #        completion_criteria:
 #          measure: progress
@@ -132,9 +126,9 @@ environment_parameters:
 #          sampler_type: multirangeuniform
 #          sampler_parameters:
 #            intervals: [[-1, -1]]
-      - name: Lesson3
-        value:
-          sampler_type: multirangeuniform
-          sampler_parameters:
-            intervals: [[-1, -1], [-1, -1], [1, 1], [1, 1], [.5, .5], [-.5, -.5]]
+#      - name: Lesson3
+#        value:
+#          sampler_type: multirangeuniform
+#          sampler_parameters:
+#            intervals: [[-1, -1], [-1, -1], [1, 1], [1, 1], [.5, .5], [-.5, -.5]]
 
