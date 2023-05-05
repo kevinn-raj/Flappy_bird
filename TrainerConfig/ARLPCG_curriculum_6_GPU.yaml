@@ -13,16 +13,16 @@ behaviors:
       buffer_size: 4096
       epsilon: 0.2
       lambd: 0.95
-      learning_rate: 0.001
+      learning_rate: 0.003
       learning_rate_schedule: linear
       num_epoch: 3    
 
 
     network_settings:
       vis_encode_type: simple
-      num_layers: 1
+      num_layers: 3
       normalize: false
-      hidden_units: 256
+      hidden_units: 64
       memory: null
 
     reward_signals:
@@ -66,7 +66,7 @@ engine_settings:
   width: 84
   height: 84
   quality_level: 5
-  time_scale: 7
+  time_scale: 3
   target_frame_rate: -1
   capture_frame_rate: 60
   
@@ -103,7 +103,7 @@ environment_parameters:
         completion_criteria:
           measure: progress
           behavior: Solver
-          threshold: .4
+          threshold: .7
         value:
           sampler_type: multirangeuniform
           sampler_parameters:
@@ -126,9 +126,9 @@ environment_parameters:
 #          sampler_type: multirangeuniform
 #          sampler_parameters:
 #            intervals: [[-1, -1]]
-      - name: Lesson3
-        value:
-          sampler_type: multirangeuniform
-          sampler_parameters:
-            intervals: [[-1, -1], [-1, -1], [1, 1], [1, 1], [.5, .5], [-.5, -.5]]
+#      - name: Lesson3
+#        value:
+#          sampler_type: multirangeuniform
+#          sampler_parameters:
+#            intervals: [[-1, -1], [-1, -1], [1, 1], [1, 1], [.5, .5], [-.5, -.5]]
 
