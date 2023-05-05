@@ -234,9 +234,9 @@ public class Solver : Agent
             var statsRecorder = Academy.Instance.StatsRecorder;
             statsRecorder.Add("Score", score);
             // Reward the score
-            float reward = .1f;
+            float reward = 1f;
             AddReward(reward);
-            RewardTheGen(.2f); // for making meaningfull environment
+            RewardTheGen(.7f); // for making meaningfull environment
 
             if (Generator && Generator.GetComponent<Generator>().createOnAchievedOnly)
             { // create the next one

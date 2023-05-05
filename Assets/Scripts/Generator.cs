@@ -153,7 +153,7 @@ public class Generator : Agent
         {
             RequestDecision();
         }
-        AddReward(.05f);
+        AddReward(.02f); // For motivation 
     }
 
     public override void OnEpisodeBegin(){
