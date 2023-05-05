@@ -201,6 +201,12 @@ public class Solver : Agent
             Generator.GetComponent<Generator>().AddReward(r);
             }
     }
+    public void CumRewardTheGen()
+    {
+        float aux = Generator.GetComponent<Generator>().aux_input;
+        float CumReward = GetCumulativeReward();
+        RewardTheGen(-aux * CumReward * 1f);
+    }
 
     private void OnCollisionEnter(Collision collidedObj)
     {  
@@ -218,9 +224,7 @@ public class Solver : Agent
             if (collidedObj.gameObject.CompareTag("Obstacle_top") ||
             collidedObj.gameObject.CompareTag("Obstacle_bottom"))
             { //If solver hits the pipes only. Not the ground
-                float aux = Generator.GetComponent<Generator>().aux_input;
-                float CumReward = GetCumulativeReward();
-                RewardTheGen(-aux * CumReward * 1f);
+                CumRewardTheGen();
                 Generator.GetComponent<Generator>().EndEpisode();
             }
                 EndEpisode();
@@ -236,7 +240,7 @@ public class Solver : Agent
             // Reward the score
             float reward = 1f;
             AddReward(reward);
-            RewardTheGen(.7f); // for making meaningfull environment
+            RewardTheGen(.2f); // for making meaningfull environment
 
             if (Generator && Generator.GetComponent<Generator>().createOnAchievedOnly)
             { // create the next one
@@ -248,6 +252,7 @@ public class Solver : Agent
                 if(isTraining){ // For reaching the goal
                     AddReward(1f);
                     EndEpisode();
+                CumRewardTheGen();
                 Generator.GetComponent<Generator>().EndEpisode();
                 }
             }

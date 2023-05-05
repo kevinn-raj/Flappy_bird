@@ -315,10 +315,13 @@ public class Generator : Agent
         float punishment = -1f;
         if (collidedObj.gameObject.CompareTag("Limit") || collidedObj.gameObject.CompareTag("Ground"))
         {
-               // AddReward(punishment); // - reward
-             // Reset the episode after mistakes or not
-                if (endEpisodeOnWrong)
-                    EndEpisode();
+            // AddReward(punishment); // - reward
+            // Reset the episode after mistakes or not
+            if (endEpisodeOnWrong)
+            {
+                solver.CumRewardTheGen();
+                EndEpisode(); 
+            }
             //Debug.Log("Hit");
         }
     }

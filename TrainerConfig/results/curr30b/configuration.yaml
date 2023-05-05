@@ -4,7 +4,7 @@ behaviors:
     trainer_type: ppo
     hyperparameters:
       batch_size: 2048
-      buffer_size: 4096
+      buffer_size: 40960
       learning_rate: 0.003
       beta: 0.007
       epsilon: 0.2
@@ -87,10 +87,10 @@ behaviors:
     self_play: null
     behavioral_cloning: null
 env_settings:
-  env_path: /home/bears_bears/Unity_projects/Flappy_bird/Builds/Linux_server/Curr30/Flappy_bird_RL_Curr30.x86_64
+  env_path: Z:\Git\Flappy_bird\Builds\Windows\Curr30\Flappy_bird.exe
   env_args: null
   base_port: 5005
-  num_envs: 40
+  num_envs: 20
   num_areas: 1
   seed: -1
   max_lifetime_restarts: 10
@@ -110,8 +110,8 @@ environment_parameters:
     - value:
         sampler_type: constant
         sampler_parameters:
-          seed: 2226
-          value: 40
+          seed: 9490
+          value: 15
       name: Lesson1
       completion_criteria: null
   aux_input:
@@ -119,7 +119,7 @@ environment_parameters:
     - value:
         sampler_type: multirangeuniform
         sampler_parameters:
-          seed: 2227
+          seed: 9491
           intervals:
           - - 1.0
             - 1.0
@@ -134,7 +134,7 @@ environment_parameters:
     - value:
         sampler_type: multirangeuniform
         sampler_parameters:
-          seed: 2228
+          seed: 9492
           intervals:
           - - -1.0
             - -1.0
@@ -147,10 +147,10 @@ environment_parameters:
         threshold: 0.65
         require_reset: false
 checkpoint_settings:
-  run_id: curr30b
+  run_id: Curr30b
   initialize_from: null
   load_model: false
-  resume: false
+  resume: true
   force: false
   train_model: false
   inference: false

@@ -1,0 +1,16 @@
+https://discuss.pytorch.org/t/winerror-1455-the-paging-file-is-too-small-for-this-operation-to-complete/131233/3
+https://stackoverflow.com/questions/64837376/how-to-efficiently-run-multiple-pytorch-processes-models-at-once-traceback
+https://gist.github.com/cobryan05/7d1fe28dd370e110a372c4d268dcb2e5#file-fixnvpe-py
+https://github.com/pytorch/pytorch/issues/35803
+
+
+Install dependency:
+python -m pip install pefile
+
+Run (for OPs paths) (NOTE: THIS WILL MODIFY YOUR DLLS [although it will back them up]):
+python fixNvPe.py --input C:\Users\gtu\anaconda3\envs\Deeplearning\lib\site-packages\torch\lib\*.dll
+
+(You also want to run this wherever your cusolver64_*.dll and friends are. This may be in your torch\lib folder, or it may be, eg, C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\vXX.X\bin . If it is under Program Files, you will need to run the script with administrative privileges
+
+
+python fixNvPe.py --input "C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v12.1\bin\*.dll"
