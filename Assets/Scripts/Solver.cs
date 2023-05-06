@@ -205,7 +205,7 @@ public class Solver : Agent
     {
         float aux = Generator.GetComponent<Generator>().aux_input;
         float CumReward = GetCumulativeReward();
-        RewardTheGen(-aux * CumReward * 1f);
+        RewardTheGen(aux * CumReward * 1f);
     }
 
     private void OnCollisionEnter(Collision collidedObj)

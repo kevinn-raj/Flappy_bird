@@ -30,7 +30,7 @@ public class Generator : Agent
     public float Height_min{
         get {return height_min;}
     }
-    private const float height_max=6f;
+    private const float height_max=8f;
     private   float height_std_scale = 4.5f; // std = [0, 10]
 
     // Horizontal distance between consecutive holes
@@ -38,7 +38,7 @@ public class Generator : Agent
     private float h_distance_m; //mean; 
     private float h_distance_std; //std
     private const float h_distance_min=1.12f;
-    private float h_distance_max=4f;
+    private float h_distance_max=6f;
     private float h_distance_std_scale = 5f; // std = [0, 10]
 
     // Vertical difference between consecutive holes
@@ -248,7 +248,7 @@ public class Generator : Agent
         /*Local next_Y coordinate relative to this object*/
         float nextYdifference =  ScaleAction(act[0], -(roofMinY-groundMaxY)/2, (roofMinY-groundMaxY)/2);
 
-        nextHeight = denormalize(act[1], height_min, height_max);
+        nextHeight = denormalize(act[1], height_min, (roofMinY - groundMaxY) / 2);
 
         // Vertical difference between consecutive holes, relative position
         nextHDistance = denormalize(act[2], h_distance_min, h_distance_max);
