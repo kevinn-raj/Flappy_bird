@@ -135,8 +135,8 @@ MonoBehaviour:
   - Obstacle_bottom
   - Limit
   - Ground
-  m_RaysPerDirection: 0
-  m_MaxRayDegrees: 0
+  m_RaysPerDirection: 1
+  m_MaxRayDegrees: 20
   m_SphereCastRadius: 0.2
   m_RayLength: 6
   m_RayLayerMask:
@@ -304,14 +304,14 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4079872946673235354}
-  m_LocalRotation: {x: 0.00000005960465, y: 0.45429006, z: -0.000000044703487, w: 0.8908539}
+  m_LocalRotation: {x: 0, y: 0.7071068, z: 0, w: 0.7071068}
   m_LocalPosition: {x: -0.36, y: 0, z: 0.25000456}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1889740935573653579}
   m_RootOrder: -1
-  m_LocalEulerAnglesHint: {x: 0, y: 54.039, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 90, z: 0}
 --- !u!114 &7062914818051533220
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -331,10 +331,10 @@ MonoBehaviour:
   - Obstacle_bottom
   - Limit
   - Ground
-  m_RaysPerDirection: 2
-  m_MaxRayDegrees: 54.1
+  m_RaysPerDirection: 4
+  m_MaxRayDegrees: 90
   m_SphereCastRadius: 0.2
-  m_RayLength: 1.6
+  m_RayLength: 2.5
   m_RayLayerMask:
     serializedVersion: 2
     m_Bits: 449
@@ -591,7 +591,6 @@ Transform:
   - {fileID: 6841517985907699929}
   - {fileID: 1884628496295919681}
   - {fileID: 8512994761242624165}
-  - {fileID: 908449524755404928}
   m_Father: {fileID: 2072840847537614603}
   m_RootOrder: -1
   m_LocalEulerAnglesHint: {x: -90, y: 0, z: 0}
@@ -989,69 +988,6 @@ MonoBehaviour:
   m_RayLayerMask:
     serializedVersion: 2
     m_Bits: 256
-  m_ObservationStacks: 1
-  rayHitColor: {r: 1, g: 0, b: 0, a: 1}
-  rayMissColor: {r: 1, g: 1, b: 1, a: 1}
-  m_StartVerticalOffset: 0
-  m_EndVerticalOffset: 0
---- !u!1 &8963010348810079455
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 908449524755404928}
-  - component: {fileID: 8646657173570125239}
-  m_Layer: 3
-  m_Name: Down sensor
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &908449524755404928
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8963010348810079455}
-  m_LocalRotation: {x: -0, y: 0.98172176, z: -0, w: 0.19032198}
-  m_LocalPosition: {x: -0.32000238, y: 0, z: -0.27000558}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 1889740935573653579}
-  m_RootOrder: -1
-  m_LocalEulerAnglesHint: {x: 0, y: 158.057, z: 0}
---- !u!114 &8646657173570125239
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8963010348810079455}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6bb6b867a41448888c1cd4f99643ad71, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_SensorName: Down Sensor
-  m_DetectableTags:
-  - Scoring
-  - Obstacle_top
-  - Obstacle_bottom
-  - Limit
-  - Ground
-  m_RaysPerDirection: 2
-  m_MaxRayDegrees: 53.5
-  m_SphereCastRadius: 0.2
-  m_RayLength: 1
-  m_RayLayerMask:
-    serializedVersion: 2
-    m_Bits: 449
   m_ObservationStacks: 1
   rayHitColor: {r: 1, g: 0, b: 0, a: 1}
   rayMissColor: {r: 1, g: 1, b: 1, a: 1}
