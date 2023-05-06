@@ -30,7 +30,7 @@ public class Generator : Agent
     public float Height_min{
         get {return height_min;}
     }
-    private const float height_max=8f;
+    private const float height_max=4f;
     private   float height_std_scale = 4.5f; // std = [0, 10]
 
     // Horizontal distance between consecutive holes
@@ -38,7 +38,7 @@ public class Generator : Agent
     private float h_distance_m; //mean; 
     private float h_distance_std; //std
     private const float h_distance_min=1.12f;
-    private float h_distance_max=6f;
+    private float h_distance_max=3f;
     private float h_distance_std_scale = 5f; // std = [0, 10]
 
     // Vertical difference between consecutive holes
@@ -153,7 +153,7 @@ public class Generator : Agent
         {
             RequestDecision();
         }
-        AddReward(.02f); // For motivation 
+        AddReward(.002f); // For motivation 
     }
 
     public override void OnEpisodeBegin(){
@@ -173,7 +173,7 @@ public class Generator : Agent
         // aux_input as environment parameters // Curriculum
         if (isDrivenByCurriculum)
         {
-        aux_input = Academy.Instance.EnvironmentParameters.GetWithDefault("aux_input", 0.0f);
+        aux_input = Academy.Instance.EnvironmentParameters.GetWithDefault("aux_input", 1f);
         n_obstacles = Convert.ToInt16(Academy.Instance.EnvironmentParameters.GetWithDefault("n_obstacles", 10f));
         }
         // randomize the aux input, choose one of the values
@@ -248,14 +248,12 @@ public class Generator : Agent
         /*Local next_Y coordinate relative to this object*/
         float nextYdifference =  ScaleAction(act[0], -(roofMinY-groundMaxY)/2, (roofMinY-groundMaxY)/2);
 
-        nextHeight = denormalize(act[1], height_min, (roofMinY - groundMaxY) / 2);
+        nextHeight = ScaleAction(act[1], height_min, height_max);
 
         // Vertical difference between consecutive holes, relative position
-        nextHDistance = denormalize(act[2], h_distance_min, h_distance_max);
-
- 
-        // float Dy = nextHDistance * Mathf.Tan(theta_next);
-        theta_next = Mathf.Atan(nextYdifference/nextHDistance);
+        nextHDistance = ScaleAction(act[2], h_distance_min, h_distance_max); 
+  
+        theta_next = Mathf.Atan(nextYdifference/nextHDistance) * Mathf.Rad2Deg;
         nextPipePos =  new Vector3(nextHDistance, nextYdifference, 0);
         // y position of the next top pipe, relative position
         nextTopY =  nextHeight/2; // local coord

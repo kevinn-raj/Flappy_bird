@@ -159,7 +159,7 @@ public class Solver : Agent
         rBody.AddForce(Physics.gravity * gravity_multiplier);
 
         //Debug.Log(rBody.velocity.y);
-        AddReward(0.01f); // To motivate to stay alive
+        AddReward(0.0001f); // To motivate to stay alive
 
     }
     public void LateUpdate(){
@@ -221,13 +221,11 @@ public class Solver : Agent
             {
                 float CollideReward = -1f;
                 AddReward(CollideReward);
-            if (collidedObj.gameObject.CompareTag("Obstacle_top") ||
-            collidedObj.gameObject.CompareTag("Obstacle_bottom"))
-            { //If solver hits the pipes only. Not the ground
-                //CumRewardTheGen();
-                Generator.GetComponent<Generator>().EndEpisode();
-            }
-                EndEpisode();
+            float aux = Generator.GetComponent<Generator>().aux_input;
+            float aux_weight = 1f;
+            RewardTheGen(CollideReward * aux * aux_weight);
+            Generator.GetComponent<Generator>().EndEpisode();
+            EndEpisode();
         } 
         // SCOREEEEEEEEEEEEE!
         else if (collidedObj.gameObject.CompareTag("Scoring"))
@@ -238,9 +236,9 @@ public class Solver : Agent
             var statsRecorder = Academy.Instance.StatsRecorder;
             statsRecorder.Add("Score", score);
             // Reward the score
-            float reward = 1f;
+            float reward = .1f;
             AddReward(reward);
-            RewardTheGen(.2f); // for making meaningfull environment
+            RewardTheGen(reward*0.2f); // for making meaningfull environment
 
             float aux = Generator.GetComponent<Generator>().aux_input;
             float aux_weight = 1f;
@@ -256,7 +254,6 @@ public class Solver : Agent
                 if(isTraining){ // For reaching the goal
                     AddReward(1f);
                     EndEpisode();
-                CumRewardTheGen();
                 Generator.GetComponent<Generator>().EndEpisode();
                 }
             }
