@@ -33,7 +33,7 @@ behaviors:
   Solver:
     trainer_type: ppo
   
-    max_steps: 1e6
+    max_steps: 3e6
     time_horizon: 64
     summary_freq: 1000
     checkpoint_interval: 10000
@@ -103,7 +103,7 @@ environment_parameters:
         completion_criteria:
           measure: progress
           behavior: Solver
-          threshold: .6
+          threshold: .4
         value:
           sampler_type: multirangeuniform
           sampler_parameters:
@@ -112,7 +112,7 @@ environment_parameters:
         completion_criteria:
           measure: progress
           behavior: Solver
-          threshold: .65
+          threshold: .8
         value:
           sampler_type: multirangeuniform
           sampler_parameters:
@@ -126,9 +126,9 @@ environment_parameters:
 #          sampler_type: multirangeuniform
 #          sampler_parameters:
 #            intervals: [[-1, -1]]
-#      - name: Lesson3
-#        value:
-#          sampler_type: multirangeuniform
-#          sampler_parameters:
-#            intervals: [[-1, -1], [-1, -1], [1, 1], [1, 1], [.5, .5], [-.5, -.5]]
+      - name: Lesson3
+        value:
+          sampler_type: multirangeuniform
+          sampler_parameters:
+            intervals: [[-1, -1], [-1, -1], [1, 1], [1, 1], [0,0], [.5, .5], [-.5, -.5]]
 

@@ -14,6 +14,6 @@ REM mlagents-learn ARLPCG_curriculum_2.yaml --num-envs 40 --run-id $run_name --e
 :: Execute this
 ::mlagents-learn ARLPCG_curriculum_6_GPU.yaml --num-envs=20 --run-id=%run_name% --env=%env% --no-graphics --torch-device=cuda --time-scale=5
 
-mlagents-learn ARLPCG_curriculum_6_GPU.yaml --num-envs=20 --run-id=%run_name% --env=%env%   --no-graphics --torch-device=cuda --time-scale=1 --force --base-port=5000
+mlagents-learn ARLPCG_curriculum_6_GPU.yaml --num-envs=20 --run-id=%run_name% --env=%env%   --no-graphics --torch-device=cuda --time-scale=1 --resume --base-port=5000
 
 
