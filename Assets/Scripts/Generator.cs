@@ -13,7 +13,7 @@ public class Generator : Agent
 
     public Solver solver;
     [Header("Auxiliary Input")]
-    [Tooltip("Axu. input, n_obstacles")]
+    [Tooltip("Aux. input, n_obstacles")]
     public bool isDrivenByCurriculum = true;
     public bool randomizeAuxInput = true;
     [Range(-3f,3f)]    public float aux_input=1f;
@@ -315,11 +315,11 @@ public class Generator : Agent
         float punishment = -1f;
         if (collidedObj.gameObject.CompareTag("Limit") || collidedObj.gameObject.CompareTag("Ground"))
         {
-            // AddReward(punishment); // - reward
+             AddReward(punishment); // - reward
             // Reset the episode after mistakes or not
             if (endEpisodeOnWrong)
             {
-                solver.CumRewardTheGen();
+                //solver.CumRewardTheGen();
                 EndEpisode(); 
             }
             //Debug.Log("Hit");
