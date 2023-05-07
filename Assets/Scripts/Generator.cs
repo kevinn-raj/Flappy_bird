@@ -97,7 +97,7 @@ public class Generator : Agent
     [HideInInspector]
     public List<GameObject> Obstacles_lst = new List<GameObject>();
 
-    private int counter=0; // counter for the obstacle
+    public int counter=0; // counter for the obstacle
 
     private float GetRandom(float mean, float std){
         // mean = (max + min)/2
@@ -142,18 +142,15 @@ public class Generator : Agent
     
     public void FixedUpdate(){
         // In case no obstacle in the scene
-        if (Obstacles_lst != null)
-        {
-            if (Obstacles_lst.Count == 0 && transform.parent.GetComponentInChildren<Solver>() != null)
-            {
-                transform.parent.GetComponentInChildren<Solver>().EndEpisode();
-            }
-        }
-        if (!createOnAchievedOnly) // can spawn any time without the solver
-        {
-            RequestDecision();
-        }
-        AddReward(.05f); // For motivation 
+        //if (Obstacles_lst != null)
+        //{
+        //    if (Obstacles_lst.Count == 0 && transform.parent.GetComponentInChildren<Solver>() != null)
+        //    {
+        //        transform.parent.GetComponentInChildren<Solver>().EndEpisode();
+        //    }
+        //}
+
+        //AddReward(.05f); // For motivation 
     }
 
     public override void OnEpisodeBegin(){

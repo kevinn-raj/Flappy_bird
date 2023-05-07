@@ -141,7 +141,8 @@ public class Solver : Agent
         Reset();
         // Reset the Generator as well
         Generator.GetComponent<Generator>().EndEpisode();
-        Generator.GetComponent<Generator>().RequestDecision();
+        if(Generator.GetComponent<Generator>().n_obstacles > 0)
+            Generator.GetComponent<Generator>().RequestDecision();
     }
 
     public void Update(){
@@ -158,8 +159,12 @@ public class Solver : Agent
         // Add custom gravity force 
         rBody.AddForce(Physics.gravity * gravity_multiplier);
 
-        //Debug.Log(rBody.velocity.y);
-        AddReward(0.0001f); // To motivate to stay alive
+        float reward = 0.001f;
+        AddReward(reward); // To motivate to stay alive
+
+        float aux = Generator.GetComponent<Generator>().aux_input;
+        float aux_weight = 1f;
+        RewardTheGen(reward * aux * aux_weight);
 
     }
     public void LateUpdate(){
@@ -236,13 +241,13 @@ public class Solver : Agent
             var statsRecorder = Academy.Instance.StatsRecorder;
             statsRecorder.Add("Score", score);
             // Reward the score
-            float reward = .1f;
-            AddReward(reward);
-            RewardTheGen(reward*0.5f); // for making meaningfull environment
+            //float reward = .1f;
+            //AddReward(reward);
+            //RewardTheGen(reward*0.5f); // for making meaningfull environment
 
-            float aux = Generator.GetComponent<Generator>().aux_input;
-            float aux_weight = 1f;
-            RewardTheGen(reward * aux * aux_weight);
+            //float aux = Generator.GetComponent<Generator>().aux_input;
+            //float aux_weight = 1f;
+            //RewardTheGen(reward * aux * aux_weight);
 
             if (Generator && Generator.GetComponent<Generator>().createOnAchievedOnly)
             { // create the next one
@@ -252,7 +257,9 @@ public class Solver : Agent
             if(score >= Generator.GetComponent<Generator>().n_obstacles){
                 // only end the episode on training
                 if(isTraining){ // For reaching the goal
-                    AddReward(1f);
+                    float reward_goal = 1f;
+                    AddReward(reward_goal);
+                    RewardTheGen(reward_goal);
                     EndEpisode();
                 Generator.GetComponent<Generator>().EndEpisode();
                 }

@@ -29,10 +29,10 @@ behaviors:
       extrinsic:
         strength: 1.0
         gamma: 0.99
-#      curiosity:
-#        strength: 0.001
-#        gamma: .99
-#        learning_rate: .001
+      curiosity:
+        strength: 0.1
+        gamma: .99
+        learning_rate: .001
         
   Solver:
     trainer_type: ppo
@@ -66,6 +66,10 @@ behaviors:
       extrinsic:
         strength: 1.0
         gamma: 0.99
+      curiosity:
+        strength: 0.1
+        gamma: .99
+        learning_rate: .001
     threaded: true
 engine_settings:
   width: 84
@@ -79,28 +83,46 @@ environment_parameters:
   n_obstacles:
     curriculum:
       - name: Lesson1 # The '-' is important as this is a list
-        value: 20
+        completion_criteria:
+          measure: reward
+          behavior: Solver
+          threshold: .45
+          signal_smoothing: false
+          min_lesson_length: 10
+        value: 0
+      - name: Lesson2 # The '-' is important as this is a list
+        completion_criteria:
+          measure: reward
+          behavior: Solver
+          threshold: .5
+          min_lesson_length: 10
+        value: 100
+#      - name: Lesson3 # The '-' is important as this is a list
+#        completion_criteria:
+#          measure: reward
+#          behavior: Solver
+#          threshold: .6
+#          min_lesson_length: 100
+#        value: 100
+#      - name: Lesson4 # The '-' is important as this is a list
+#        completion_criteria:
+#          measure: reward
+#          behavior: Solver
+#          threshold: 1.4
+#          min_lesson_length: 100
+#        value: 11
 
   aux_input:
     curriculum:
       - name: Lesson1 # The '-' is important as this is a list
         completion_criteria:
-          measure: progress
+          measure: reward
           behavior: Solver
-          threshold: .5
-        value:
-          sampler_type: multirangeuniform
-          sampler_parameters:
-            intervals: [[1, 1]]
-      - name: Lesson2 # The '-' is important as this is a list
-        completion_criteria:
-          measure: progress
-          behavior: Solver
-          threshold: .8
-        value:
-          sampler_type: multirangeuniform
-          sampler_parameters:
-            intervals: [[-1, -1]]
+          threshold: .4
+          min_lesson_length: 100
+        value: 1
+
+        
 #      - name: Lesson4 # The '-' is important as this is a list
 #        completion_criteria:
 #          measure: progress
@@ -110,9 +132,9 @@ environment_parameters:
 #          sampler_type: multirangeuniform
 #          sampler_parameters:
 #            intervals: [[-1, -1]]
-      - name: Lesson3
-        value:
-          sampler_type: multirangeuniform
-          sampler_parameters:
-            intervals: [[0,0], [.5, .5], [-.5, -.5]]
+#     - name: Lesson3
+#       value:
+#         sampler_type: multirangeuniform
+#         sampler_parameters:
+#           intervals: [[0,0], [.5, .5], [-.5, -.5]]
 

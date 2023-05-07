@@ -22,7 +22,7 @@ behaviors:
       vis_encode_type: simple
       num_layers: 2
       normalize: false
-      hidden_units: 128
+      hidden_units: 256
       memory: null
 
     reward_signals:
@@ -30,7 +30,7 @@ behaviors:
         strength: 1.0
         gamma: 0.99
       curiosity:
-        strength: 0.03
+        strength: 0.00001
         gamma: .99
         learning_rate: .001
         
@@ -66,6 +66,10 @@ behaviors:
       extrinsic:
         strength: 1.0
         gamma: 0.99
+      curiosity:
+        strength: 0.001
+        gamma: .99
+        learning_rate: .001
     threaded: true
 engine_settings:
   width: 84
