@@ -2,7 +2,7 @@ behaviors:
   Generator:
     trainer_type: ppo
   
-    max_steps: 3e5
+    max_steps: 1e5
     time_horizon: 64
     summary_freq: 250
     checkpoint_interval: 1000
@@ -29,15 +29,15 @@ behaviors:
       extrinsic:
         strength: 1.0
         gamma: 0.99
-      curiosity:
-        strength: .5
-        gamma: .99
-        learning_rate: .0005
+#      curiosity:
+#        strength: 0.001
+#        gamma: .99
+#        learning_rate: .001
         
   Solver:
     trainer_type: ppo
   
-    max_steps: 3e6
+    max_steps: 1e6
     time_horizon: 64
     summary_freq: 1000
     checkpoint_interval: 10000

@@ -238,7 +238,7 @@ public class Solver : Agent
             // Reward the score
             float reward = .1f;
             AddReward(reward);
-            RewardTheGen(reward*0.2f); // for making meaningfull environment
+            RewardTheGen(reward*0.5f); // for making meaningfull environment
 
             float aux = Generator.GetComponent<Generator>().aux_input;
             float aux_weight = 1f;

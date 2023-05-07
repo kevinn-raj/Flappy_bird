@@ -153,7 +153,7 @@ public class Generator : Agent
         {
             RequestDecision();
         }
-        AddReward(.002f); // For motivation 
+        AddReward(.05f); // For motivation 
     }
 
     public override void OnEpisodeBegin(){
@@ -308,7 +308,7 @@ public class Generator : Agent
         }
     }
 
-    private void OnTriggerStay(Collider collidedObj)
+    private void OnTriggerEnter(Collider collidedObj)
     {
         float punishment = -1f;
         if (collidedObj.gameObject.CompareTag("Limit") || collidedObj.gameObject.CompareTag("Ground"))
