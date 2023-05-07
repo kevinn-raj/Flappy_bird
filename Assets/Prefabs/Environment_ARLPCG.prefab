@@ -240,14 +240,14 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3895063045557656610}
-  m_LocalRotation: {x: 0, y: 0.7071068, z: 0, w: 0.7071068}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 3.64, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1889740935573653579}
   m_RootOrder: -1
-  m_LocalEulerAnglesHint: {x: 0, y: 90, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1702869808602695842
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -261,20 +261,28 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_SensorName: GridSensor
-  m_CellScale: {x: 1, y: 0.01, z: 1}
+  m_CellScale: {x: 1, y: 2, z: 1}
   m_GridSize: {x: 16, y: 1, z: 16}
   m_RotateWithAgent: 1
   m_AgentGameObject: {fileID: 7203639048383587611}
   m_DetectableTags:
   - Obstacle
   - Scoring
+  - Obstacle_top
+  - Obstacle_bottom
+  - Ground
+  - Limit
   m_ColliderMask:
     serializedVersion: 2
-    m_Bits: 64
+    m_Bits: 448
   m_MaxColliderBufferSize: 500
   m_InitialColliderBufferSize: 4
   m_DebugColors:
   - {r: 0.9598806, g: 0.3027918, b: 0.0901458, a: 0}
+  - {r: 0.36035073, g: 0.35472232, b: 0.35472232, a: 0}
+  - {r: 0.36035073, g: 0.35472232, b: 0.35472232, a: 0}
+  - {r: 0.36035073, g: 0.35472232, b: 0.35472232, a: 0}
+  - {r: 0.36035073, g: 0.35472232, b: 0.35472232, a: 0}
   - {r: 0.36035073, g: 0.35472232, b: 0.35472232, a: 0}
   m_GizmoYOffset: 0
   m_ShowGizmos: 1
@@ -331,9 +339,9 @@ MonoBehaviour:
   - Obstacle_bottom
   - Limit
   - Ground
-  m_RaysPerDirection: 4
+  m_RaysPerDirection: 10
   m_MaxRayDegrees: 90
-  m_SphereCastRadius: 0.2
+  m_SphereCastRadius: 0.12
   m_RayLength: 6
   m_RayLayerMask:
     serializedVersion: 2
@@ -657,7 +665,7 @@ MonoBehaviour:
   agentParameters:
     maxStep: 0
   hasUpgradedFromAgentParameters: 1
-  MaxStep: 500
+  MaxStep: 300
   isTraining: 1
   jumpForce: 5.5
   jumpKey: 

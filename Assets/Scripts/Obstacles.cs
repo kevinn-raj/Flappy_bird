@@ -39,8 +39,8 @@ public class Obstacles : MonoBehaviour
     void SetScoringBox(){
         Vector3 diff = top.localPosition - bottom.localPosition;
         Vector3 mid = (top.localPosition + bottom.localPosition)/2;
-        scoringZone.size = new Vector3(0.8f, diff.y, 2);
-        scoringZone.center = new Vector3(0, mid.y, 0); // at the center
+        scoringZone.size = new Vector3(scoringZone.size.x, diff.y, 2);
+        scoringZone.center = new Vector3(scoringZone.center.x, mid.y, scoringZone.center.z); // at the center
     }
     private void Start()
     {
