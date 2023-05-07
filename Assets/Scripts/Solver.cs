@@ -266,4 +266,13 @@ public class Solver : Agent
             }
         }
     }
+
+    private void OnTriggerStay(Collider collidedObj)
+    {
+        float punishment = -.05f;
+        if (collidedObj.gameObject.CompareTag("Limit"))
+        {
+            AddReward(punishment);  // Prevent to stay on the roof
+        }
+    }
 }

@@ -136,61 +136,35 @@ environment_parameters:
     - value:
         sampler_type: constant
         sampler_parameters:
-          seed: 9140
+          seed: 67
           value: 0
       name: Lesson1
       completion_criteria:
         behavior: Solver
         measure: reward
-        min_lesson_length: 20
+        min_lesson_length: 10
         signal_smoothing: false
         threshold: 0.45
         require_reset: false
     - value:
         sampler_type: constant
         sampler_parameters:
-          seed: 9141
-          value: 1
+          seed: 68
+          value: 100
       name: Lesson2
       completion_criteria:
         behavior: Solver
         measure: reward
-        min_lesson_length: 20
+        min_lesson_length: 10
         signal_smoothing: true
         threshold: 0.5
-        require_reset: false
-    - value:
-        sampler_type: constant
-        sampler_parameters:
-          seed: 9142
-          value: 3
-      name: Lesson3
-      completion_criteria:
-        behavior: Solver
-        measure: reward
-        min_lesson_length: 100
-        signal_smoothing: true
-        threshold: 0.6
-        require_reset: false
-    - value:
-        sampler_type: constant
-        sampler_parameters:
-          seed: 9143
-          value: 11
-      name: Lesson4
-      completion_criteria:
-        behavior: Solver
-        measure: reward
-        min_lesson_length: 100
-        signal_smoothing: true
-        threshold: 1.4
         require_reset: false
   aux_input:
     curriculum:
     - value:
         sampler_type: constant
         sampler_parameters:
-          seed: 9144
+          seed: 69
           value: 1
       name: Lesson1
       completion_criteria:
@@ -204,8 +178,8 @@ checkpoint_settings:
   run_id: test_1
   initialize_from: null
   load_model: false
-  resume: true
-  force: false
+  resume: false
+  force: true
   train_model: false
   inference: false
   results_dir: results

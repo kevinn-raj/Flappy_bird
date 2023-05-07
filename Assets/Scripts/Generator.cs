@@ -150,7 +150,7 @@ public class Generator : Agent
         //    }
         //}
 
-        //AddReward(.05f); // For motivation 
+        //AddReward(1f); // For motivation 
     }
 
     public override void OnEpisodeBegin(){
@@ -181,29 +181,29 @@ public class Generator : Agent
         if(counter != 0){
         Vector3 diff = prevPipe.transform.position - transform.position;
         // distance x relative to previous pipe
-        sensor.AddObservation(normalize(diff.x, h_distance_min, h_distance_max)); //normalize
+        sensor.AddObservation(diff.x); //normalize
         // distance y relative to previous pipe
-        sensor.AddObservation(normalize(diff.y, bottom_miny-top_maxy, top_maxy-bottom_miny)); //normalize
-        sensor.AddObservation(normalize(theta_t, -theta_max, theta_max)); //actual angle relative to previous obstacle
+        sensor.AddObservation(diff.y); //normalize
+        sensor.AddObservation(theta_t); //actual angle relative to previous obstacle
         }else{ // For the first spawn
-        sensor.AddObservation(normalize(0, h_distance_min, h_distance_max));
+        sensor.AddObservation( 0 );
         //float firstY = Random.Range(bottom_maxy, top_miny) - transform.position.y; // random y relative to this transform
-        sensor.AddObservation(normalize(0, bottom_miny-top_maxy, top_maxy-bottom_miny)); // suppose a random starting position
-        sensor.AddObservation(normalize(0, -theta_max, theta_max)); //random first angle
+        sensor.AddObservation( 0 ); // suppose a random starting position
+        sensor.AddObservation( 0 ); //random first angle
         // Debug.Log("First obs");
         }
-        // fetch the max Y of the ground
-        float groundMaxY = ground.GetComponent<Collider>().bounds.max.y;
-        // fetch the min Y of the roof
-        float roofMinY = roof.GetComponent<Collider>().bounds.min.y;
+        //// fetch the max Y of the ground
+        //float groundMaxY = ground.GetComponent<Collider>().bounds.max.y;
+        //// fetch the min Y of the roof
+        //float roofMinY = roof.GetComponent<Collider>().bounds.min.y;
 
-        float obs = normalize(groundMaxY - transform.position.y, groundMaxY, roofMinY); //normalized for stability
-        // Set the vertical distance from the ground as observation
-        sensor.AddObservation(obs);
+        //float obs = normalize(groundMaxY - transform.position.y, groundMaxY, roofMinY); //normalized for stability
+        //// Set the vertical distance from the ground as observation
+        //sensor.AddObservation(obs);
 
-        obs = normalize(roofMinY - transform.position.y, groundMaxY, roofMinY);  //normalized for stability
-        //Set the vertical distance from the roof as observation
-        sensor.AddObservation(obs);
+        //obs = normalize(roofMinY - transform.position.y, groundMaxY, roofMinY);  //normalized for stability
+        ////Set the vertical distance from the roof as observation
+        //sensor.AddObservation(obs);
     }
 
     public override void Heuristic(in ActionBuffers actionsOut){
@@ -257,12 +257,16 @@ public class Generator : Agent
         // y position of the next bottom pipe, relative position
         nextBottomY = -nextHeight/2; // move this transform to the next created obstacles
         CreateWithAgent();
+
+        if(transform.position.y > groundMaxY && roofMinY > transform.position.y) {
+            AddReward(1f / n_obstacles);
+        }
         // For statistics
         var statsRecorder = Academy.Instance.StatsRecorder;
-            statsRecorder.Add("theta", theta_next);
+            statsRecorder.Add("theta", (theta_next));
             statsRecorder.Add("height", nextHeight);
             statsRecorder.Add("distance", nextHDistance);
-            statsRecorder.Add("Y_difference", nextYdifference);
+            statsRecorder.Add("Y_difference", (nextYdifference));
     }
 
     // Generate with the Generator Agent
@@ -296,21 +300,21 @@ public class Generator : Agent
             Obstacles_lst.Add(pipe);
             counter++; // increment the counter
             //Debug.Log(counter);
-            latestAchieved = false;
             prevPipe = pipe;
             theta_t = theta_next;
             }
-    //Lastly move the generator's y to the created obstacles' y
+     
+        //Lastly move the generator's y to the created obstacles' y
             transform.position += new Vector3(0, nextPipePos.y, 0);
         }
     }
 
-    private void OnTriggerEnter(Collider collidedObj)
+    private void OnTriggerStay(Collider collidedObj)
     {
         float punishment = -1f;
         if (collidedObj.gameObject.CompareTag("Limit") || collidedObj.gameObject.CompareTag("Ground"))
         {
-             AddReward(punishment); // - reward
+             SetReward(punishment); // - reward
             // Reset the episode after mistakes or not
             if (endEpisodeOnWrong)
             {

@@ -1,9 +1,9 @@
 @echo off
 REM run with 50 instances
-set env="Z:\Git\Flappy_bird\Builds\Windows\Curr36\Flappy_bird.exe"
-set run_name=Curr36g
-set run_easy=Curr36gEasy
-set run_hard=Curr36gHard
+set env="Z:\Git\Flappy_bird\Builds\Windows\Curr39\Flappy_bird.exe"
+set run_name=Curr39bis 
+set run_easy=Curr36hEasy
+set run_hard=Curr36hHard
 REM resume previous training
 REM mlagents-learn ARLPCG_curriculum.yaml --num-envs 50 --run-id run_name --no-graphics --env env --resume
 REM mlagents-learn ARLPCG_curriculum.yaml --num-envs 50 --run-id $run_name --env $env --resume --no-graphics 
@@ -13,10 +13,10 @@ REM mlagents-learn ARLPCG_curriculum.yaml --run-id test_newGen --force # new gen
 REM mlagents-learn ARLPCG_curriculum_2.yaml --num-envs 40 --run-id $run_name --env $env --resume --no-graphics --time-scale 20
 
 :: Execute this
-::mlagents-learn ARLPCG_curriculum_6_GPU.yaml --num-envs=20 --run-id=%run_name% --env=%env% --no-graphics --torch-device=cuda --time-scale=5
+mlagents-learn ARLPCG_curriculum_6_GPU.yaml --num-envs=10 --run-id=%run_name%  --no-graphics --torch-device=cuda --time-scale=3    --env=%env%
 
-mlagents-learn easy.yaml --num-envs=20 --run-id=%run_easy% --env=%env%   --no-graphics --torch-device=cuda --time-scale=3  --base-port=5000 
-
-mlagents-learn hard.yaml --num-envs=20 --run-id=%run_hard% --env=%env%   --no-graphics --torch-device=cuda --time-scale=3  --base-port=5000 --initialize-from=%run_easy%
+::mlagents-learn easy.yaml --num-envs=7 --run-id=%run_easy% --env=%env%   --no-graphics --torch-device=cuda --time-scale=3  --base-port=5000 
+::
+::mlagents-learn hard.yaml --num-envs=7 --run-id=%run_hard% --env=%env%   --no-graphics --torch-device=cuda --time-scale=3  --base-port=5000 --initialize-from=%run_easy%
 
 
