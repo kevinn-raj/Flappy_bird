@@ -258,9 +258,11 @@ public class Generator : Agent
         nextBottomY = -nextHeight/2; // move this transform to the next created obstacles
         CreateWithAgent();
 
-        if(transform.position.y > groundMaxY && roofMinY > transform.position.y) {
-            AddReward(1f / n_obstacles);
+        if (transform.position.y > groundMaxY && roofMinY > transform.position.y)
+        {
+            AddReward(counter / n_obstacles);
         }
+        else AddReward(-1f);
         // For statistics
         var statsRecorder = Academy.Instance.StatsRecorder;
             statsRecorder.Add("theta", (theta_next));
@@ -311,10 +313,10 @@ public class Generator : Agent
 
     private void OnTriggerStay(Collider collidedObj)
     {
-        float punishment = -1f;
+        float punishment = -4f;
         if (collidedObj.gameObject.CompareTag("Limit") || collidedObj.gameObject.CompareTag("Ground"))
         {
-             SetReward(punishment); // - reward
+             //SetReward(punishment); // - reward
             // Reset the episode after mistakes or not
             if (endEpisodeOnWrong)
             {

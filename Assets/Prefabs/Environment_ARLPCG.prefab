@@ -232,7 +232,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &6841517985907699929
 Transform:
   m_ObjectHideFlags: 0
@@ -261,8 +261,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_SensorName: GridSensor
-  m_CellScale: {x: 1, y: 2, z: 1}
-  m_GridSize: {x: 16, y: 1, z: 16}
+  m_CellScale: {x: 0.7, y: 2, z: 0.7}
+  m_GridSize: {x: 16, y: 1, z: 25}
   m_RotateWithAgent: 1
   m_AgentGameObject: {fileID: 7203639048383587611}
   m_DetectableTags:
@@ -270,8 +270,6 @@ MonoBehaviour:
   - Scoring
   - Obstacle_top
   - Obstacle_bottom
-  - Ground
-  - Limit
   m_ColliderMask:
     serializedVersion: 2
     m_Bits: 448
@@ -279,9 +277,7 @@ MonoBehaviour:
   m_InitialColliderBufferSize: 4
   m_DebugColors:
   - {r: 0.9598806, g: 0.3027918, b: 0.0901458, a: 0}
-  - {r: 0.36035073, g: 0.35472232, b: 0.35472232, a: 0}
-  - {r: 0.36035073, g: 0.35472232, b: 0.35472232, a: 0}
-  - {r: 0.36035073, g: 0.35472232, b: 0.35472232, a: 0}
+  - {r: 0.21333212, g: 0.8867924, b: 0.21333212, a: 0}
   - {r: 0.36035073, g: 0.35472232, b: 0.35472232, a: 0}
   - {r: 0.36035073, g: 0.35472232, b: 0.35472232, a: 0}
   m_GizmoYOffset: 0
@@ -665,7 +661,7 @@ MonoBehaviour:
   agentParameters:
     maxStep: 0
   hasUpgradedFromAgentParameters: 1
-  MaxStep: 300
+  MaxStep: 650
   isTraining: 1
   jumpForce: 5.5
   jumpKey: 
@@ -1010,7 +1006,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1127053788885459664}
-  - component: {fileID: 7040747166965742062}
+  - component: {fileID: 5681298387672108572}
   - component: {fileID: 3403722283295826160}
   - component: {fileID: 5796762245648913017}
   - component: {fileID: 4679202980260445448}
@@ -1037,8 +1033,8 @@ Transform:
   m_Father: {fileID: 2072840847537614603}
   m_RootOrder: -1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!135 &7040747166965742062
-SphereCollider:
+--- !u!65 &5681298387672108572
+BoxCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -1047,7 +1043,7 @@ SphereCollider:
   m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2
-    m_Bits: 256
+    m_Bits: 0
   m_ExcludeLayers:
     serializedVersion: 2
     m_Bits: 0
@@ -1056,7 +1052,7 @@ SphereCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Radius: 0.5
+  m_Size: {x: 1, y: 2.31, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!54 &3403722283295826160
 Rigidbody:
@@ -1082,9 +1078,9 @@ Rigidbody:
   m_ImplicitTensor: 1
   m_UseGravity: 0
   m_IsKinematic: 1
-  m_Interpolate: 0
+  m_Interpolate: 1
   m_Constraints: 0
-  m_CollisionDetection: 0
+  m_CollisionDetection: 1
 --- !u!114 &5796762245648913017
 MonoBehaviour:
   m_ObjectHideFlags: 0
