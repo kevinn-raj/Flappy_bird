@@ -44,7 +44,7 @@ behaviors:
     keep_checkpoints: 20
     
     hyperparameters:
-      batch_size: 32
+      batch_size: 64
       beta: 0.001
       buffer_size: 2048
       epsilon: 0.2
@@ -86,10 +86,24 @@ environment_parameters:
         completion_criteria:
           measure: reward
           behavior: Solver
-          threshold: .1
+          threshold: .0
           signal_smoothing: false
-          min_lesson_length: 10
+          min_lesson_length: 50
         value: 0
+      - name: Lesson2 # The '-' is important as this is a list
+        completion_criteria:
+          measure: reward
+          behavior: Solver
+          threshold: .2
+          min_lesson_length: 70
+        value: 3
+      - name: Lesson3 # The '-' is important as this is a list
+        completion_criteria:
+          measure: reward
+          behavior: Solver
+          threshold: .25
+          min_lesson_length: 100
+        value: 6
       - name: Lesson2 # The '-' is important as this is a list
         completion_criteria:
           measure: reward

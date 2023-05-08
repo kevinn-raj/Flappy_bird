@@ -159,7 +159,7 @@ public class Solver : Agent
         // Add custom gravity force 
         rBody.AddForce(Physics.gravity * gravity_multiplier);
 
-        float reward = 0.001f;
+        float reward = 0.01f;
         AddReward(reward); // To motivate to stay alive
 
         float aux = Generator.GetComponent<Generator>().aux_input;
@@ -192,9 +192,10 @@ public class Solver : Agent
     private void Reset()
     {
         score = 0;
-        
+        float groundMaxY = ground.GetComponent<Collider>().bounds.max.y;
+        float roofMinY = roof.GetComponent<Collider>().bounds.min.y;
         //Reset Movement and Position
-        transform.localPosition = new Vector3(startingPosition.x, Random.Range(-4.8f, 4.26f) , startingPosition.z);
+        transform.localPosition = new Vector3(startingPosition.x, Random.Range(groundMaxY, roofMinY) , startingPosition.z);
         rBody.velocity = Vector3.zero;
         
         OnReset?.Invoke();
@@ -236,10 +237,12 @@ public class Solver : Agent
         else if (collidedObj.gameObject.CompareTag("Scoring"))
         {
             score++;
-            maxScore = Mathf.Max(score, maxScore);
+
             // log the scores into TensorBoard
             var statsRecorder = Academy.Instance.StatsRecorder;
             statsRecorder.Add("Score", score);
+            maxScore = Mathf.Max(score, maxScore);
+
             // Reward the score
             //float reward = .1f;
             //AddReward(reward);
@@ -269,7 +272,7 @@ public class Solver : Agent
 
     private void OnTriggerStay(Collider collidedObj)
     {
-        float punishment = -.05f;
+        float punishment = -.1f;
         if (collidedObj.gameObject.CompareTag("Limit"))
         {
             AddReward(punishment);  // Prevent to stay on the roof
