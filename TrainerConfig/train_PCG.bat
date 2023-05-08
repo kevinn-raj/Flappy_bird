@@ -11,7 +11,7 @@ REM mlagents-learn ARLPCG_curriculum.yaml --run-id test_newGen --force # new gen
 REM mlagents-learn ARLPCG_curriculum_2.yaml --num-envs 40 --run-id $run_name --env $env --resume --no-graphics --time-scale 20
 
 :: Execute this
-mlagents-learn PCG.yaml  --num-envs=10 --run-id=%run_name%  --no-graphics --torch-device=cuda --time-scale=1  --force --env=%env%
+mlagents-learn PCG.yaml  --num-envs=10 --run-id=%run_name%  --no-graphics --torch-device=cuda --time-scale=1  --resume --env=%env%
 
 ::mlagents-learn easy.yaml --num-envs=7 --run-id=%run_easy% --env=%env%   --no-graphics --torch-device=cuda --time-scale=3  --base-port=5000 
 ::

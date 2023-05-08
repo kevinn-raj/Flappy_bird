@@ -211,26 +211,28 @@ public class Generator : Agent
         Vector3 initPos = transform.position;
 
         for(int j=0; j<n_obstacles && counter<n_obstacles; j++){
-        float randHeight = Random.Range(heur_height_min, heur_height_max);
-        float yposTop = Random.Range(top_maxy, top_miny+randHeight);//local
-        // float randHDistance = Random.Range(h_distance_min, h_distance_max);
-        float randHDistance = Random.Range(heur_hdist_min, heur_hdist_max);
-        
-        GameObject p = Instantiate(prefab, initPos, Quaternion.identity);
-        p.GetComponent<Obstacles>().speed = obst_speed;
-        p.transform.position += new Vector3(randHDistance, 0, 0);
+            float randHeight = Random.Range(heur_height_min, heur_height_max);
+            float yposTop = Random.Range(bottom_miny + randHeight, top_maxy);
 
-        top = p.transform.Find("Top Pipe");
-        bottom = p.transform.Find("Bottom Pipe");    
+            // float randHDistance = Random.Range(h_distance_min, h_distance_max);
+            float randHDistance = Random.Range(heur_hdist_min, heur_hdist_max);
 
-        // Position the top and bottom pipes, absolute positions
-        top.position += new Vector3(0, yposTop, 0);
-        bottom.position = new Vector3(bottom.position.x, top.position.y-randHeight , bottom.position.z);
+            GameObject p = Instantiate(prefab, initPos, Quaternion.identity);
+            p.GetComponent<Obstacles>().speed = obst_speed;
+            p.transform.position += new Vector3(randHDistance, 0, 0);
+            Obstacles_lst.Add(p);
 
-        // Add the created obstacle to the list of all generated obstacles
-        Obstacles_lst.Add(p);
-        initPos = p.transform.position;
-        counter++;
+            top = p.transform.Find("Top Pipe");
+            bottom = p.transform.Find("Bottom Pipe");
+
+            // Position the top and bottom pipes, absolute positions
+            top.position = new Vector3(top.position.x, yposTop, top.position.z);
+            bottom.position = new Vector3(bottom.position.x, top.position.y - randHeight, bottom.position.z);
+
+            // Add the created obstacle to the list of all generated obstacles
+            //Obstacles_lst.Add(p);
+            initPos = p.transform.position;
+            counter++;
         }
     }
 
@@ -274,9 +276,28 @@ public class Generator : Agent
             Transform top, bottom;
             Vector3 initPos;
 
-            initPos = prevPipe.transform.position + nextPipePos;
-            // Instantiate the obstacle in the same position as previous
-            pipe = Instantiate(prefab, initPos, Quaternion.identity);
+            //move the generator's y to the created obstacles' y
+            transform.position += new Vector3(0, nextPipePos.y, 0);
+
+            // fetch the max Y of the ground
+            float groundMaxY = ground.GetComponent<Collider>().bounds.max.y;
+            // fetch the min Y of the roof
+            float roofMinY = roof.GetComponent<Collider>().bounds.min.y;
+                // Check and reward 
+                if (transform.position.y >= groundMaxY && roofMinY >= transform.position.y)
+                {
+                    AddReward(counter / n_obstacles);
+                }
+                else { // if this transform goes outside the limits
+                    AddReward(-1f);
+                    transform.position = new Vector3(transform.position.x,
+                            Mathf.Clamp(transform.position.y, roofMinY, groundMaxY), transform.position.z);
+                }
+
+                initPos = prevPipe.transform.position + nextPipePos;
+                initPos.y = transform.position.y; //Clamp to the limits
+                // Instantiate the obstacle in the same position as previous
+                pipe = Instantiate(prefab, initPos, Quaternion.identity);
                 //Debug.Log(pipe);
 
             // Obstacle speed
@@ -299,49 +320,35 @@ public class Generator : Agent
             //Debug.Log(counter);
             prevPipe = pipe;
             theta_t = theta_next;
-
-
-                //Lastly move the generator's y to the created obstacles' y
-                transform.position += new Vector3(0, nextPipePos.y, 0);
-
-                // fetch the max Y of the ground
-                float groundMaxY = ground.GetComponent<Collider>().bounds.max.y;
-                // fetch the min Y of the roof
-                float roofMinY = roof.GetComponent<Collider>().bounds.min.y;
-                if (transform.position.y > groundMaxY && roofMinY > transform.position.y)
-                {
-                    AddReward(counter / n_obstacles);
-                }
-                else AddReward(-1f);
             }
 
         }
     }
 
-    private void OnTriggerEnter(Collider collidedObj)
-    {
-        float punishment = -1f;
-        if (collidedObj.gameObject.CompareTag("Limit") || collidedObj.gameObject.CompareTag("Ground"))
-        {
-             //SetReward(punishment); // - reward
-            // Reset the episode after mistakes or not
-            if (endEpisodeOnWrong)
-            {
-                //solver.CumRewardTheGen();
-                EndEpisode();
-                try
-                {
-                    solver.EndEpisode();
-                }
-                catch (global::System.Exception)
-                {
-                    Debug.LogWarning("No solver assigned!");
-                    //throw;
-                }
-            }
-            //Debug.Log("Hit");
-        }
-    }
+    //private void OnTriggerEnter(Collider collidedObj)
+    //{
+    //    float punishment = -1f;
+    //    if (collidedObj.gameObject.CompareTag("Limit") || collidedObj.gameObject.CompareTag("Ground"))
+    //    {
+    //         //SetReward(punishment); // - reward
+    //        // Reset the episode after mistakes or not
+    //        if (endEpisodeOnWrong)
+    //        {
+    //            //solver.CumRewardTheGen();
+    //            EndEpisode();
+    //            try
+    //            {
+    //                solver.EndEpisode();
+    //            }
+    //            catch (global::System.Exception)
+    //            {
+    //                Debug.LogWarning("No solver assigned!");
+    //                //throw;
+    //            }
+    //        }
+    //        //Debug.Log("Hit");
+    //    }
+    //}
 }
 
 
