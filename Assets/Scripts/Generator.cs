@@ -258,11 +258,6 @@ public class Generator : Agent
         nextBottomY = -nextHeight/2; // move this transform to the next created obstacles
         CreateWithAgent();
 
-        if (transform.position.y > groundMaxY && roofMinY > transform.position.y)
-        {
-            AddReward(counter / n_obstacles);
-        }
-        else AddReward(-1f);
         // For statistics
         var statsRecorder = Academy.Instance.StatsRecorder;
             statsRecorder.Add("theta", (theta_next));
@@ -304,10 +299,22 @@ public class Generator : Agent
             //Debug.Log(counter);
             prevPipe = pipe;
             theta_t = theta_next;
+
+
+                //Lastly move the generator's y to the created obstacles' y
+                transform.position += new Vector3(0, nextPipePos.y, 0);
+
+                // fetch the max Y of the ground
+                float groundMaxY = ground.GetComponent<Collider>().bounds.max.y;
+                // fetch the min Y of the roof
+                float roofMinY = roof.GetComponent<Collider>().bounds.min.y;
+                if (transform.position.y > groundMaxY && roofMinY > transform.position.y)
+                {
+                    AddReward(counter / n_obstacles);
+                }
+                else AddReward(-1f);
             }
-     
-        //Lastly move the generator's y to the created obstacles' y
-            transform.position += new Vector3(0, nextPipePos.y, 0);
+
         }
     }
 

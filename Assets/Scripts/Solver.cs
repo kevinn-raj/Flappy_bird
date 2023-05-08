@@ -141,7 +141,8 @@ public class Solver : Agent
         Reset();
         // Reset the Generator as well
         Generator.GetComponent<Generator>().EndEpisode();
-        if(Generator.GetComponent<Generator>().n_obstacles > 0)
+        // Request decision if without Decision requester
+        if(Generator.GetComponent<Generator>().n_obstacles > 0 && Generator.GetComponent<Generator>().createOnAchievedOnly)
             Generator.GetComponent<Generator>().RequestDecision();
     }
 
@@ -267,14 +268,25 @@ public class Solver : Agent
                 Generator.GetComponent<Generator>().EndEpisode();
                 }
             }
+            else if(score >= 10)
+            {
+                float reward_goal = 1f;
+                AddReward(reward_goal);
+                RewardTheGen(reward_goal);
+            }
+        }
+        else if (collidedObj.gameObject.CompareTag("Limit"))
+        {
+        float punishment = -.5f;
+            AddReward(punishment);  // Prevent to stay on the roof
         }
     }
 
     private void OnTriggerStay(Collider collidedObj)
     {
-        float punishment = -.1f;
         if (collidedObj.gameObject.CompareTag("Limit"))
         {
+            float punishment = -.5f;
             AddReward(punishment);  // Prevent to stay on the roof
         }
     }
