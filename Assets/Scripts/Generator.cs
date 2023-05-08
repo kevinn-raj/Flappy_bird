@@ -329,7 +329,15 @@ public class Generator : Agent
             {
                 //solver.CumRewardTheGen();
                 EndEpisode();
-                solver.EndEpisode();
+                try
+                {
+                    solver.EndEpisode();
+                }
+                catch (global::System.Exception)
+                {
+                    Debug.LogWarning("No solver assigned!");
+                    //throw;
+                }
             }
             //Debug.Log("Hit");
         }
