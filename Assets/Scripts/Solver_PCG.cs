@@ -10,20 +10,16 @@ using Random = UnityEngine.Random;
 public class Solver_PCG : Agent
 {
     public bool isTraining = true;
-    [SerializeField] private float jumpForce=1.5f;
+    [SerializeField] private float jumpForce=5.5f;
     [SerializeField] private string jumpKey;
     
     // Jump is available or not
     // private bool jumpIsReady = true;
     [SerializeField]
-    private float JUMP_TIME_WINDOW = .1f; // in seconds // Cannot jump twice within that time
+    private float JUMP_TIME_WINDOW = .001f; // in seconds // Cannot jump twice within that time
     private float lastJump; // Time of the last jump
 
-    public float gravity_multiplier = .6f;
-
-    private float XMAX = 6;
-    private float YMAX = 6;
-    private float ZMAX = 6;
+    public float gravity_multiplier = .7f;
 
     public Rigidbody rBody;
     private const float minVelocity=-50f;
@@ -37,15 +33,6 @@ public class Solver_PCG : Agent
     public GameObject ground;
     public GameObject roof;
     public RuledPCG gen;       // Fetch the Generator object
-
-    // To store the next target  (the score triggers), the element will be replaced by the next score trigger,
-    // whenever the player hits its trigger
-    [SerializeField]
-    [Range(1,2)]
-    private int target_numbers = 2; // Number of target the agent can see
-    [SerializeField]
-    // private GameObject target=null; 
-    private GameObject[] targets = new GameObject[2]; // this target array has always 2 elements
     
 
     public bool useObs = true;
@@ -55,9 +42,6 @@ public class Solver_PCG : Agent
 
     EnvironmentParameters m_ResetParams;
 
-    [Header("Debugs")]
-    [SerializeField]
-    private bool isDebug = true;
     
     public float normalize01(float actual, float minimum, float maximum){
         return (actual - minimum)/(maximum - minimum);}
@@ -102,7 +86,6 @@ public class Solver_PCG : Agent
         // Action 0 = 0 : Nothing, 1 : Jump
         if(act[0] == 1){
             Jump();
-            //Vector2.SmoothDamp();
         }
     }
  
@@ -132,15 +115,17 @@ public class Solver_PCG : Agent
     public override void OnEpisodeBegin(){
         // Reset
         Reset();
-        // Reset the Generator as well
-        gen.Reset();
-        // Request decision if without Decision requester
+            try{
+                gen.Reset();
+            }
+            catch (Exception e) { }
+
         gen.CreateRandom();
     }
     public void Start()
     {
         try{
-        gen = GameObject.Find("RuledPCG").GetComponent<RuledPCG>();
+        gen = transform.parent.Find("RuledPCG").GetComponent<RuledPCG>();
         }catch(Exception e) { }
     }
     public void Update(){
@@ -184,10 +169,6 @@ public class Solver_PCG : Agent
                 float CollideReward = -1f;
                 AddReward(CollideReward);
             EndEpisode();
-            try{
-                gen.Reset();
-            }
-            catch (Exception e) { }
         } 
         // SCOREEEEEEEEEEEEE!
         else if (collidedObj.gameObject.CompareTag("Scoring"))
@@ -208,7 +189,6 @@ public class Solver_PCG : Agent
                         float reward_goal = 1f;
                         AddReward(reward_goal);
                         EndEpisode();
-                        gen.Reset();
                     }
                 }
             }
