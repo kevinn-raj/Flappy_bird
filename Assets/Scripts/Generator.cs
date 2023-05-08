@@ -284,21 +284,21 @@ public class Generator : Agent
             // fetch the min Y of the roof
             float roofMinY = roof.GetComponent<Collider>().bounds.min.y;
                 // Check and reward 
-                if (transform.position.y >= groundMaxY && roofMinY >= transform.position.y)
-                {
-                    AddReward(counter / n_obstacles);
-                }
-                else { // if this transform goes outside the limits
-                    AddReward(-1f);
-                    transform.position = new Vector3(transform.position.x,
-                            Mathf.Clamp(transform.position.y, roofMinY, groundMaxY), transform.position.z);
-                }
+            if (transform.position.y >= groundMaxY && roofMinY >= transform.position.y)
+            {
+                AddReward(counter / n_obstacles);
+            }
+            else { // if this transform goes outside the limits
+                AddReward(-1f);
+                transform.position = new Vector3(transform.position.x,
+                        Mathf.Clamp(transform.position.y, groundMaxY, roofMinY), transform.position.z);
+            }
 
-                initPos = prevPipe.transform.position + nextPipePos;
-                initPos.y = transform.position.y; //Clamp to the limits
-                // Instantiate the obstacle in the same position as previous
-                pipe = Instantiate(prefab, initPos, Quaternion.identity);
-                //Debug.Log(pipe);
+            initPos = prevPipe.transform.position + nextPipePos;
+            initPos.y = transform.position.y; //Clamp to the limits
+            // Instantiate the obstacle in the same position as previous
+            pipe = Instantiate(prefab, initPos, Quaternion.identity);
+            //Debug.Log(pipe);
 
             // Obstacle speed
             pipe.GetComponent<Obstacles>().speed = obst_speed;
