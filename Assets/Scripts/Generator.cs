@@ -311,9 +311,9 @@ public class Generator : Agent
         }
     }
 
-    private void OnTriggerStay(Collider collidedObj)
+    private void OnTriggerEnter(Collider collidedObj)
     {
-        float punishment = -4f;
+        float punishment = -1f;
         if (collidedObj.gameObject.CompareTag("Limit") || collidedObj.gameObject.CompareTag("Ground"))
         {
              //SetReward(punishment); // - reward
@@ -321,7 +321,8 @@ public class Generator : Agent
             if (endEpisodeOnWrong)
             {
                 //solver.CumRewardTheGen();
-                EndEpisode(); 
+                EndEpisode();
+                solver.EndEpisode();
             }
             //Debug.Log("Hit");
         }
