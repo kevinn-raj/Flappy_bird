@@ -26,18 +26,26 @@ public class RuledPCG : MonoBehaviour
     [Range(2f, 5f)] public float heur_height_max = 5f;
 
     /* Limits and Constraints */
+    public GameObject ground;
+    public GameObject roof;
     [HideInInspector] public float top_maxy = 4.8f;
     [HideInInspector] public float bottom_maxy;
     [HideInInspector] public float bottom_miny = -4.5f;
     [HideInInspector] public float top_miny;
-
+    private Vector3 resetPos;
+    
     [HideInInspector]
     public List<GameObject> Obstacles_lst = new List<GameObject>();
 
     // Start is called before the first frame update
     void Start()
     {
-        
+        //// fetch the max Y of the ground
+        bottom_miny = ground.GetComponent<Collider>().bounds.max.y;
+        //// fetch the min Y of the roof
+        top_maxy = roof.GetComponent<Collider>().bounds.min.y;
+
+        resetPos = transform.position;
     }
 
     // Update is called once per frame
@@ -60,7 +68,7 @@ public class RuledPCG : MonoBehaviour
     public void CreateRandom()
     {
         Transform top, bottom;
-        Vector3 initPos = transform.position;
+        Vector3 initPos = resetPos;
 
         // Values controlled by environment parameters
         if(isControledAuto)
@@ -75,7 +83,7 @@ public class RuledPCG : MonoBehaviour
         for (int j = 0; j < n_obstacles && counter < n_obstacles; j++)
         {
             float randHeight = Random.Range(heur_height_min, heur_height_max);
-            float yposTop = Random.Range(top_maxy, top_miny + randHeight);//local
+            float yposTop = Random.Range(bottom_miny + randHeight, top_maxy);
 
             // float randHDistance = Random.Range(h_distance_min, h_distance_max);
             float randHDistance = Random.Range(heur_hdist_min, heur_hdist_max);
@@ -89,7 +97,7 @@ public class RuledPCG : MonoBehaviour
             bottom = p.transform.Find("Bottom Pipe");
 
             // Position the top and bottom pipes, absolute positions
-            top.position += new Vector3(0, yposTop, 0);
+            top.position = new Vector3(top.position.x, yposTop, top.position.z);
             bottom.position = new Vector3(bottom.position.x, top.position.y - randHeight, bottom.position.z);
 
             // Add the created obstacle to the list of all generated obstacles

@@ -158,6 +158,12 @@ public class Solver_PCG : Agent
     private void OnCollisionEnter(Collision collidedObj)
     {  
     }
+    private void RegisterScore()
+    {
+        // log the scores into TensorBoard
+        var statsRecorder = Academy.Instance.StatsRecorder;
+        statsRecorder.Add("Score", score);
+    }
 
     private void OnTriggerEnter(Collider collidedObj)
     {      
@@ -168,21 +174,20 @@ public class Solver_PCG : Agent
             {
                 float CollideReward = -1f;
                 AddReward(CollideReward);
+            RegisterScore();
             EndEpisode();
         } 
         // SCOREEEEEEEEEEEEE!
         else if (collidedObj.gameObject.CompareTag("Scoring"))
         {
             score++;
-            // log the scores into TensorBoard
-            var statsRecorder = Academy.Instance.StatsRecorder;
-            statsRecorder.Add("Score", score);
             maxScore = Mathf.Max(score, maxScore);
             try
             {
                 // Goal reached
                 if (score >= gen.n_obstacles)
-                {
+                {   
+                    RegisterScore();
                     // only end the episode on training
                     if (isTraining)
                     { // For reaching the goal
