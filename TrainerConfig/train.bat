@@ -1,7 +1,7 @@
 @echo off
 REM run with 50 instances
-set env="Z:\Git\Flappy_bird\Builds\Windows\Curr40\Flappy_bird.exe"
-set run_name=Curr40 
+set env="Z:\Git\Flappy_bird\Builds\Windows\Curr41\Flappy_bird.exe"
+set run_name=Curr41
 set run_easy=Curr36hEasy
 set run_hard=Curr36hHard
 REM resume previous training
@@ -13,7 +13,8 @@ REM mlagents-learn ARLPCG_curriculum.yaml --run-id test_newGen --force # new gen
 REM mlagents-learn ARLPCG_curriculum_2.yaml --num-envs 40 --run-id $run_name --env $env --resume --no-graphics --time-scale 20
 
 :: Execute this
-mlagents-learn ARLPCG_curriculum_6_GPU.yaml --num-envs=1 --run-id=%run_name%  --no-graphics --torch-device=cuda --time-scale=1  --resume
+mlagents-learn ARLPCG_curriculum_6_GPU.yaml --num-envs=10 --run-id=%run_name% --env=%env%   --no-graphics --torch-device=cuda --time-scale=1 --force
+
 
 ::mlagents-learn easy.yaml --num-envs=7 --run-id=%run_easy% --env=%env%   --no-graphics --torch-device=cuda --time-scale=3  --base-port=5000 
 ::
