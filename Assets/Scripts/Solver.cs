@@ -239,6 +239,7 @@ public class Solver : Agent
             float reward = 1f;
             float aux = Generator.GetComponent<Generator>().aux_input;
             float aux_weight = 1f;
+            RewardTheGen(reward * .4f); //Motivation for making traversable env
             RewardTheGen(reward * aux * aux_weight);
 
             // log the scores into TensorBoard
