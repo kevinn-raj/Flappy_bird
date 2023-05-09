@@ -13,7 +13,7 @@ REM mlagents-learn ARLPCG_curriculum.yaml --run-id test_newGen --force # new gen
 REM mlagents-learn ARLPCG_curriculum_2.yaml --num-envs 40 --run-id $run_name --env $env --resume --no-graphics --time-scale 20
 
 :: Execute this
-mlagents-learn ARLPCG_curriculum_6_GPU.yaml --num-envs=10 --run-id=%run_name% --env=%env%   --no-graphics --torch-device=cuda --time-scale=1 --force
+mlagents-learn ARLPCG_curriculum_6_GPU.yaml --num-envs=10 --run-id=%run_name% --env=%env%   --no-graphics --torch-device=cuda --time-scale=1 --resume
 
 ::mlagents-learn ARLPCG_curriculum_6_GPU.yaml --num-envs=1 --run-id=%run_name%   --no-graphics --torch-device=cuda --time-scale=1 --force
 
