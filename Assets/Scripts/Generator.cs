@@ -16,7 +16,7 @@ public class Generator : Agent
     [Tooltip("Aux. input, n_obstacles")]
     public bool isDrivenByCurriculum = true;
     public bool randomizeAuxInput = true;
-    [Range(-3f,3f)]    public float aux_input=1f;
+    [Range(-10f,10f)]    public float aux_input=1f;
     private const int nAuxInputs = 5;
     private float[] auxInputs = new float[nAuxInputs]{-1f, -.5f, 0f, .5f, 1f};
 
@@ -289,7 +289,7 @@ public class Generator : Agent
                 AddReward(counter / n_obstacles);
             }
             else { // if this transform goes outside the limits
-                AddReward(-counter / n_obstacles);
+                AddReward(-1);
                 transform.position = new Vector3(transform.position.x,
                         Mathf.Clamp(transform.position.y, groundMaxY +  nextHeight/2, roofMinY - nextHeight/2), transform.position.z);
             }
