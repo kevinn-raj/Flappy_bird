@@ -228,9 +228,6 @@ public class Solver : Agent
             {
                 float CollideReward = -1f;
                 AddReward(CollideReward);
-            float aux = Generator.GetComponent<Generator>().aux_input;
-            float aux_weight = 1f;
-            RewardTheGen(CollideReward * aux * aux_weight);
             Generator.GetComponent<Generator>().EndEpisode();
             EndEpisode();
         } 
@@ -238,6 +235,11 @@ public class Solver : Agent
         else if (collidedObj.gameObject.CompareTag("Scoring"))
         {
             score++;
+
+            float reward = 1f;
+            float aux = Generator.GetComponent<Generator>().aux_input;
+            float aux_weight = 1f;
+            RewardTheGen(reward * aux * aux_weight);
 
             // log the scores into TensorBoard
             var statsRecorder = Academy.Instance.StatsRecorder;
@@ -263,7 +265,6 @@ public class Solver : Agent
                 if(isTraining){ // For reaching the goal
                     float reward_goal = 1f;
                     AddReward(reward_goal);
-                    RewardTheGen(reward_goal);
                     EndEpisode();
                 Generator.GetComponent<Generator>().EndEpisode();
                 }
