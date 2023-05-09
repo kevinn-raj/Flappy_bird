@@ -36,7 +36,7 @@ behaviors:
           deterministic: false
       curiosity:
         gamma: 0.99
-        strength: 0.07
+        strength: 0.01
         network_settings:
           normalize: false
           hidden_units: 128
@@ -50,9 +50,9 @@ behaviors:
     init_path: null
     keep_checkpoints: 5
     checkpoint_interval: 1000
-    max_steps: 2500000
+    max_steps: 1000000
     time_horizon: 64
-    summary_freq: 250
+    summary_freq: 1000
     threaded: false
     self_play: null
     behavioral_cloning: null
@@ -93,17 +93,17 @@ behaviors:
     init_path: null
     keep_checkpoints: 20
     checkpoint_interval: 10000
-    max_steps: 3000000
+    max_steps: 1000000
     time_horizon: 64
     summary_freq: 1000
     threaded: true
     self_play: null
     behavioral_cloning: null
 env_settings:
-  env_path: Z:\Git\Flappy_bird\Builds\Windows\Curr41\Flappy_bird.exe
+  env_path: null
   env_args: null
   base_port: 5005
-  num_envs: 10
+  num_envs: 1
   num_areas: 1
   seed: -1
   max_lifetime_restarts: 10
@@ -123,7 +123,7 @@ environment_parameters:
     - value:
         sampler_type: constant
         sampler_parameters:
-          seed: 352
+          seed: 6589
           value: 10
       name: Lesson1
       completion_criteria:
@@ -138,7 +138,7 @@ environment_parameters:
     - value:
         sampler_type: constant
         sampler_parameters:
-          seed: 353
+          seed: 6590
           value: 1
       name: Lesson1
       completion_criteria:
@@ -151,7 +151,7 @@ environment_parameters:
     - value:
         sampler_type: constant
         sampler_parameters:
-          seed: 354
+          seed: 6591
           value: -1
       name: Lesson2
       completion_criteria:
@@ -164,7 +164,7 @@ environment_parameters:
     - value:
         sampler_type: constant
         sampler_parameters:
-          seed: 355
+          seed: 6592
           value: 1
       name: Lesson3
       completion_criteria:
@@ -177,7 +177,7 @@ environment_parameters:
     - value:
         sampler_type: constant
         sampler_parameters:
-          seed: 356
+          seed: 6593
           value: -1
       name: Lesson4
       completion_criteria:

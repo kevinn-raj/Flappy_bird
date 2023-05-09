@@ -258,7 +258,7 @@ public class Solver : Agent
             Generator.GetComponent<Generator>().RequestDecision();
                     }
             // Goal reached
-            if(score >= Generator.GetComponent<Generator>().n_obstacles){
+            if(score >= Generator.GetComponent<Generator>().n_obstacles - 1){
                 // only end the episode on training
                 if(isTraining){ // For reaching the goal
                     float reward_goal = 1f;

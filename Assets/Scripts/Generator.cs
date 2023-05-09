@@ -289,9 +289,9 @@ public class Generator : Agent
                 AddReward(counter / n_obstacles);
             }
             else { // if this transform goes outside the limits
-                AddReward(-1f);
+                AddReward(-counter / n_obstacles);
                 transform.position = new Vector3(transform.position.x,
-                        Mathf.Clamp(transform.position.y, groundMaxY, roofMinY), transform.position.z);
+                        Mathf.Clamp(transform.position.y, groundMaxY +  nextHeight/2, roofMinY - nextHeight/2), transform.position.z);
             }
 
             initPos = prevPipe.transform.position + nextPipePos;
