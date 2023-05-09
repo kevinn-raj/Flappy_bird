@@ -99,6 +99,29 @@ public class Generator : Agent
 
     public int counter=0; // counter for the obstacle
 
+    // For track generation
+     
+    public class Track
+    {
+        public List<GameObject> pieces { get; set; }
+        public List<float> ydiffs { get; set; }
+        public List<float> heights { get; set; }
+        public List<float> distances { get; set; }
+        public List<float> angles { get; set; }
+
+        public Track(){
+            this.pieces = new List<GameObject>();
+            this.ydiffs = new List<float>();
+            this.heights = new List<float>(); 
+            this.distances = new List<float>();
+            this.angles = new List<float>();
+        }
+    }
+
+
+    public Track tracks;
+
+
     private float GetRandom(float mean, float std){
         // mean = (max + min)/2
         // std = (max - min)/2
@@ -124,6 +147,8 @@ public class Generator : Agent
         return Mathf.Sign(Random.Range(-1, 1));
     }
 
+
+
     void Awake(){
         // Initialize variables
         bottom_maxy = top_maxy - height_min;
@@ -138,6 +163,10 @@ public class Generator : Agent
         solver = transform.parent.GetComponentInChildren<Solver>();
 
         isHeuristic = gameObject.GetComponent<Unity.MLAgents.Policies.BehaviorParameters>().BehaviorType == Unity.MLAgents.Policies.BehaviorType.HeuristicOnly; /*Check if Heuristic or not*/
+
+        tracks = new Track();
+
+
     }
     
     public void FixedUpdate(){
@@ -206,35 +235,35 @@ public class Generator : Agent
         //sensor.AddObservation(obs);
     }
 
-    public override void Heuristic(in ActionBuffers actionsOut){
-        Transform top, bottom;
-        Vector3 initPos = transform.position;
+    // public override void Heuristic(in ActionBuffers actionsOut){
+    //     Transform top, bottom;
+    //     Vector3 initPos = transform.position;
 
-        for(int j=0; j<n_obstacles && counter<n_obstacles; j++){
-            float randHeight = Random.Range(heur_height_min, heur_height_max);
-            float yposTop = Random.Range(bottom_miny + randHeight, top_maxy);
+    //     for(int j=0; j<n_obstacles && counter<n_obstacles; j++){
+    //         float randHeight = Random.Range(heur_height_min, heur_height_max);
+    //         float yposTop = Random.Range(bottom_miny + randHeight, top_maxy);
 
-            // float randHDistance = Random.Range(h_distance_min, h_distance_max);
-            float randHDistance = Random.Range(heur_hdist_min, heur_hdist_max);
+    //         // float randHDistance = Random.Range(h_distance_min, h_distance_max);
+    //         float randHDistance = Random.Range(heur_hdist_min, heur_hdist_max);
 
-            GameObject p = Instantiate(prefab, initPos, Quaternion.identity);
-            p.GetComponent<Obstacles>().speed = obst_speed;
-            p.transform.position += new Vector3(randHDistance, 0, 0);
-            Obstacles_lst.Add(p);
+    //         GameObject p = Instantiate(prefab, initPos, Quaternion.identity);
+    //         p.GetComponent<Obstacles>().speed = obst_speed;
+    //         p.transform.position += new Vector3(randHDistance, 0, 0);
+    //         Obstacles_lst.Add(p);
 
-            top = p.transform.Find("Top Pipe");
-            bottom = p.transform.Find("Bottom Pipe");
+    //         top = p.transform.Find("Top Pipe");
+    //         bottom = p.transform.Find("Bottom Pipe");
 
-            // Position the top and bottom pipes, absolute positions
-            top.position = new Vector3(top.position.x, yposTop, top.position.z);
-            bottom.position = new Vector3(bottom.position.x, top.position.y - randHeight, bottom.position.z);
+    //         // Position the top and bottom pipes, absolute positions
+    //         top.position = new Vector3(top.position.x, yposTop, top.position.z);
+    //         bottom.position = new Vector3(bottom.position.x, top.position.y - randHeight, bottom.position.z);
 
-            // Add the created obstacle to the list of all generated obstacles
-            //Obstacles_lst.Add(p);
-            initPos = p.transform.position;
-            counter++;
-        }
-    }
+    //         // Add the created obstacle to the list of all generated obstacles
+    //         //Obstacles_lst.Add(p);
+    //         initPos = p.transform.position;
+    //         counter++;
+    //     }
+    // }
 
     public override void OnActionReceived(ActionBuffers actionBuffers){
         // fetch the max Y of the ground
@@ -260,6 +289,13 @@ public class Generator : Agent
         nextBottomY = -nextHeight/2; // move this transform to the next created obstacles
         CreateWithAgent();
 
+        // for track generation
+        tracks.ydiffs.Add(nextYdifference);
+        tracks.heights.Add(nextHeight);
+        tracks.distances.Add(nextHDistance);
+        tracks.angles.Add(theta_next);
+        tracks.pieces = Obstacles_lst;
+
         // For statistics
         var statsRecorder = Academy.Instance.StatsRecorder;
             statsRecorder.Add("theta", (theta_next));
@@ -268,11 +304,19 @@ public class Generator : Agent
             statsRecorder.Add("Y_difference", (nextYdifference));
     }
 
+
+    public void CreateTracks(int n_per_track, float auxiliary_input, out Track tracks){
+        n_obstacles = n_per_track;
+        aux_input = auxiliary_input;
+
+        tracks = this.tracks;
+    }
+
     // Generate with the Generator Agent
     public void CreateWithAgent(){
         if(!isHeuristic){ /*Execute only in Inference mode*/
         /*Spawn only if it is less than a certain number*/
-        if(counter <= n_obstacles){
+        if(counter < n_obstacles){
             Transform top, bottom;
             Vector3 initPos;
 
