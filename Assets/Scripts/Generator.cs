@@ -119,7 +119,7 @@ public class Generator : Agent
     }
 
 
-    public Track tracks;
+    public Track tracks = new Track();
 
 
     private float GetRandom(float mean, float std){
@@ -163,10 +163,6 @@ public class Generator : Agent
         solver = transform.parent.GetComponentInChildren<Solver>();
 
         isHeuristic = gameObject.GetComponent<Unity.MLAgents.Policies.BehaviorParameters>().BehaviorType == Unity.MLAgents.Policies.BehaviorType.HeuristicOnly; /*Check if Heuristic or not*/
-
-        tracks = new Track();
-
-
     }
     
     public void FixedUpdate(){
@@ -342,6 +338,17 @@ public class Generator : Agent
             initPos.y = transform.position.y; //Clamp to the limits
             // Instantiate the obstacle in the same position as previous
             pipe = Instantiate(prefab, initPos, Quaternion.identity);
+
+            if(GameObject.Find("ObstaclesMaster") != null){
+                GameObject master;
+                master = GameObject.Find("ObstaclesMaster");
+                pipe.transform.SetParent(master.transform);
+            }
+            else{
+                GameObject master = new GameObject();
+                master.name = "ObstaclesMaster";
+                pipe.transform.SetParent(master.transform);
+            }
             //Debug.Log(pipe);
 
             // Obstacle speed
