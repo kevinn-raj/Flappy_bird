@@ -41,7 +41,6 @@ public class TracksCreator : MonoBehaviour
     {
         if(isCreating && aux_counter < n_aux)
         {
-            gen.RequestDecision();
             // Export for 1 track
             if(gen.counter >= n_per_track){ //After the gen has created every obstacle of the current track
                 if(track_counter < track_per_aux){
