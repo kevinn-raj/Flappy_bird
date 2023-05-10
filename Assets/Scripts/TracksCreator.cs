@@ -14,16 +14,18 @@ public class TracksCreator : MonoBehaviour
     Generator gen; 
     public bool isCreating = true;
     public Generator.Track tracks;
-    public const int n_aux = 3;
-    [HideInInspector]
-    public float[] auxs = new float[n_aux]{-2, -1, -.5f};
+    [HideInInspector] public int n_aux;
+    // [HideInInspector]
+    public float[] auxs;
     // public float[] auxs = new float[n_aux]{-2, -1, -.5f, 0, .5f, 1, 2}; // Aux input list that will be used
     public float timescale = 0f;
-    int n_per_track = 10;
+    public int n_per_track = 10;
     int track_counter = 0;
-    int track_per_aux = 50;
-    string root = "Assets/Prefabs/Tracks";
+    public int track_per_aux = 50;
+    public string root = "Assets/Prefabs/Tracks";
     int aux_counter = 0;
+
+    public string delimiter = ";";
 
 
     // Start is called before the first frame update
@@ -33,7 +35,7 @@ public class TracksCreator : MonoBehaviour
         gen = GetComponent<Generator>();
         tracks =  new Generator.Track();
         // WriteString("Hello", "test.txt");
-        
+        n_aux = auxs.Length;
     }
 
     // Update is called once per frame
@@ -106,7 +108,7 @@ public class TracksCreator : MonoBehaviour
             string h = heights_[i].ToString();
             string d = distances_[i].ToString();
             string a = angles_[i].ToString();
-                sb.Append('\n').Append(y).Append(',').Append(h).Append(',').Append(d).Append(',').Append(a);
+                sb.Append('\n').Append(y).Append(delimiter).Append(h).Append(delimiter).Append(d).Append(delimiter).Append(a);
             }
             return sb.ToString();
         }
