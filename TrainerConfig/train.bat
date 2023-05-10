@@ -1,7 +1,7 @@
 @echo off
 REM run with 50 instances
 set env="Z:\Git\Flappy_bird\Builds\Windows\Curr42\Flappy_bird.exe"
-set run_name=Curr42c
+set run_name=Curr42d
 set run_easy=Curr36hEasy
 set run_hard=Curr36hHard
 REM resume previous training
