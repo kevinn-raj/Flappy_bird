@@ -11,7 +11,7 @@ using Random = UnityEngine.Random;
 
 public class TracksCreator : MonoBehaviour
 {
-    Generator gen;
+    Generator gen; 
     public bool isCreating = true;
     public Generator.Track tracks;
     public const int n_aux = 3;
@@ -39,6 +39,7 @@ public class TracksCreator : MonoBehaviour
     // Update is called once per frame
     void FixedUpdate()
     {
+#if UNITY_EDITOR
         if(isCreating && aux_counter < n_aux)
         {
             // Export for 1 track
@@ -75,10 +76,11 @@ public class TracksCreator : MonoBehaviour
                 }
             }
         }
-        
+#endif
+
     }
 
-        public static void WriteString(string text, string path)
+    public static void WriteString(string text, string path)
        {
             // Debug.Log(path);
            //Write some text to the test.txt file
@@ -104,7 +106,7 @@ public class TracksCreator : MonoBehaviour
             string h = heights_[i].ToString();
             string d = distances_[i].ToString();
             string a = angles_[i].ToString();
-                sb.Append('\n').Append(y).Append(',').Append(h).Append(d).Append(a);
+                sb.Append('\n').Append(y).Append(',').Append(h).Append(',').Append(d).Append(',').Append(a);
             }
             return sb.ToString();
         }
