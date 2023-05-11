@@ -187,7 +187,11 @@ public class Generator : Agent
         Obstacles_lst = new List<GameObject>();
         counter = 0;
         // Reset the generator's position
-        transform.localPosition = new Vector3(transform.localPosition.x, 0, transform.localPosition.z);
+        // fetch the max Y of the ground
+            float groundMaxY = ground.GetComponent<Collider>().bounds.max.y;
+            // fetch the min Y of the roof
+            float roofMinY = roof.GetComponent<Collider>().bounds.min.y;
+        transform.position = new Vector3(transform.position.x, Random.Range(groundMaxY +  nextHeight/2, roofMinY - nextHeight/2), transform.position.z);
         // To store the position of the previous obstacle, relative to the generator transform
         prevPipe = gameObject;
         pipe = gameObject;
@@ -200,6 +204,8 @@ public class Generator : Agent
         }
         // randomize the aux input, choose one of the values
         else if(randomizeAuxInput) aux_input = auxInputs[Random.Range(0, nAuxInputs)];
+
+        tracks = new Track(); // Reinitialize this object
     }
     public override void CollectObservations(VectorSensor sensor){
         sensor.AddObservation(aux_input); // auxiliary input
@@ -301,11 +307,11 @@ public class Generator : Agent
     }
 
 
-    public void CreateTracks(int n_per_track, float auxiliary_input, out Track tracks){
+    public Track CreateTracks(int n_per_track, float auxiliary_input){
         n_obstacles = n_per_track;
         aux_input = auxiliary_input;
 
-        tracks = this.tracks;
+        return tracks;
     }
 
     // Generate with the Generator Agent

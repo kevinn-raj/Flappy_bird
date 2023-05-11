@@ -11,7 +11,7 @@ using Random = UnityEngine.Random;
 
 public class TracksCreator : MonoBehaviour
 {
-    Generator gen; 
+    public Generator gen; 
     public bool isCreating = true;
     public Generator.Track tracks;
     [HideInInspector] public int n_aux;
@@ -50,22 +50,23 @@ public class TracksCreator : MonoBehaviour
                    // replace the aux input by the next one
                     if(aux_counter < n_aux){
                         string aux_string = Convert.ToString(auxs[aux_counter]);
-                        gen.CreateTracks(n_per_track, auxs[aux_counter], out tracks); 
+                        tracks = gen.CreateTracks(n_per_track, auxs[aux_counter]); 
                         // create folders if not existing
                         if (!Directory.Exists(root + "/" + aux_string))
                             AssetDatabase.CreateFolder(root, aux_string);
                             string track_string = Convert.ToString(track_counter);
                             string localPath = root + "/" + aux_string + "/" + track_string + ".prefab";
-                            GameObject parent = tracks.pieces[0].transform.parent.gameObject; //Get the parent
+                            GameObject parent = gen.tracks.pieces[0].transform.parent.gameObject; //Get the parent
                             PrefabUtility.SaveAsPrefabAsset(parent, localPath); // save the prefab
                             // writing the specifications into a file
-                            List<float> ydiffs = tracks.ydiffs;
-                            List<float> heights = tracks.heights;
-                            List<float> distances = tracks.distances;
-                            List<float> angles = tracks.angles;
+                            List<float> ydiffs = gen.tracks.ydiffs;
+                            List<float> heights = gen.tracks.heights;
+                            List<float> distances = gen.tracks.distances;
+                            List<float> angles = gen.tracks.angles;
                             
                             string content = ToCSV(ydiffs, heights, distances, angles);
                             string csv_path = root + "/" + aux_string + "/" + track_string + ".csv";
+                            // Debug.Log(content);
                             WriteString(content, csv_path);
                             
                         track_counter++; // new track
@@ -102,13 +103,14 @@ public class TracksCreator : MonoBehaviour
 
         public string ToCSV(List<float> ydiffs_,List<float> heights_,List<float> distances_,List<float> angles_)
         {
-            var sb = new System.Text.StringBuilder("ydiffs,heights,distances,angles");
+            var sb = new System.Text.StringBuilder("ydiffs;heights;distances;angles");
             for(int i = 1; i < n_per_track; i++) { // the first element is not relevant
             string y = ydiffs_[i].ToString();
             string h = heights_[i].ToString();
             string d = distances_[i].ToString();
             string a = angles_[i].ToString();
                 sb.Append('\n').Append(y).Append(delimiter).Append(h).Append(delimiter).Append(d).Append(delimiter).Append(a);
+            // Debug.Log(y);
             }
             return sb.ToString();
         }
