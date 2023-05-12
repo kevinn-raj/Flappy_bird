@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 using Unity.MLAgents;
 using Unity.MLAgents.Actuators;
 using Unity.MLAgents.Sensors;
@@ -52,6 +53,8 @@ public class Solver : Agent
 
 
     public event Action OnReset;
+
+    public UnityEvent isEpisodeEnded = new UnityEvent();
 
     EnvironmentParameters m_ResetParams;
 
@@ -137,6 +140,7 @@ public class Solver : Agent
     }
 
     public override void OnEpisodeBegin(){
+        isEpisodeEnded.Invoke();
         // Reset
         Reset();
         // Reset the Generator as well
@@ -162,16 +166,12 @@ public class Solver : Agent
 
         float reward = 0.01f;
         AddReward(reward); // To motivate to stay alive
-
         float aux = Generator.GetComponent<Generator>().aux_input;
         float aux_weight = 1f;
         RewardTheGen(reward * aux * aux_weight);
 
     }
     public void LateUpdate(){
-        
-         /* Update the target */
-        List<GameObject> pipes = Generator.GetComponent<Generator>().Obstacles_lst;        
  
 
        /* Debugs */

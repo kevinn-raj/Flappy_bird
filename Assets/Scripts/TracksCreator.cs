@@ -8,6 +8,7 @@ using Unity.MLAgents;
 using Unity.MLAgents.Actuators;
 using Unity.MLAgents.Sensors;
 using Random = UnityEngine.Random;
+using System.Globalization; // For float string conversion
 
 public class TracksCreator : MonoBehaviour
 {
@@ -16,13 +17,13 @@ public class TracksCreator : MonoBehaviour
     public Generator.Track tracks;
     [HideInInspector] public int n_aux;
     // [HideInInspector]
-    public float[] auxs;
+    public List<float> auxs;
     // public float[] auxs = new float[n_aux]{-2, -1, -.5f, 0, .5f, 1, 2}; // Aux input list that will be used
     public float timescale = 0f;
     public int n_per_track = 10;
     int track_counter = 0;
     public int track_per_aux = 50;
-    public string root = "Assets/Prefabs/Tracks";
+    public string root = "Assets/Scripts/Resources/Tracks";
     int aux_counter = 0;
 
     public string delimiter = ";";
@@ -35,7 +36,14 @@ public class TracksCreator : MonoBehaviour
         gen = GetComponent<Generator>();
         tracks =  new Generator.Track();
         // WriteString("Hello", "test.txt");
-        n_aux = auxs.Length;
+        n_aux = auxs.Count;
+
+        // #########################################################################
+        // IMPORTANT to properly convert float to string with "." as decimal not ","
+        System.Globalization.CultureInfo customCulture = (System.Globalization.CultureInfo)System.Threading.Thread.CurrentThread.CurrentCulture.Clone();
+        customCulture.NumberFormat.NumberDecimalSeparator = ".";
+        System.Threading.Thread.CurrentThread.CurrentCulture = customCulture;
+        // ######################################################################### 
     }
 
     // Update is called once per frame
@@ -50,6 +58,7 @@ public class TracksCreator : MonoBehaviour
                    // replace the aux input by the next one
                     if(aux_counter < n_aux){
                         string aux_string = Convert.ToString(auxs[aux_counter]);
+                        Debug.Log(aux_string); // Debug
                         tracks = gen.CreateTracks(n_per_track, auxs[aux_counter]); 
                         // create folders if not existing
                         if (!Directory.Exists(root + "/" + aux_string))
@@ -103,12 +112,12 @@ public class TracksCreator : MonoBehaviour
 
         public string ToCSV(List<float> ydiffs_,List<float> heights_,List<float> distances_,List<float> angles_)
         {
-            var sb = new System.Text.StringBuilder("ydiffs;heights;distances;angles");
+            var sb = new System.Text.StringBuilder("ydiffs"+delimiter+"heights"+delimiter+"distances"+delimiter+"angles");
             for(int i = 1; i < n_per_track; i++) { // the first element is not relevant
-            string y = ydiffs_[i].ToString();
-            string h = heights_[i].ToString();
-            string d = distances_[i].ToString();
-            string a = angles_[i].ToString();
+            string y = Convert.ToString(ydiffs_[i]);
+            string h = Convert.ToString(heights_[i]);
+            string d = Convert.ToString(distances_[i]);
+            string a = Convert.ToString(angles_[i]);
                 sb.Append('\n').Append(y).Append(delimiter).Append(h).Append(delimiter).Append(d).Append(delimiter).Append(a);
             // Debug.Log(y);
             }
