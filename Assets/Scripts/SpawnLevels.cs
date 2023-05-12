@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
+using Random = UnityEngine.Random;
 
 public class SpawnLevels : MonoBehaviour
 {
@@ -54,25 +55,22 @@ public class SpawnLevels : MonoBehaviour
 
     public void NextTrack(){
         // Debug.Log("Next!!");
-        // without extension
-        actualPrefab = Resources.Load<GameObject>(TracksRootFolder + "/" + Convert.ToString(aux_input) + "/" + Convert.ToString(track_counter));
-        actualTrackObj = Instantiate(actualPrefab, transform.position, Quaternion.identity);
-        track_counter++; // Increment
-        if(track_counter == trackNumber){ // 
-            trialCounter++;
-        }
 
-        track_counter %= trackNumber; //0 to track number - 1
+        track_counter = Random.Range(0, trackNumber); // Pick a random track
+       
+        actualPrefab = Resources.Load<GameObject>(TracksRootFolder + "/" + Convert.ToString(aux_input) + "/" + Convert.ToString(track_counter));  // without extension
+        actualTrackObj = Instantiate(actualPrefab, transform.position, Quaternion.identity);
+        Transform firstChild = actualTrackObj.transform.GetChild(0);
+        // Move the track parent object so that the first child is exactly where this object is at start
+        actualTrackObj.transform.position += actualTrackObj.transform.position - firstChild.position;
     }
     public void Reset(){
         Destroy(actualTrackObj);
-        if(trialCounter == maxTrials){ // If the number of max trials is reached stop the Academy or the inference
-            if(solver != null){
-            solver.StopAcademy();
-            }
-            Debug.Log("Trial finished!");
-        }else{ // Spawn only if the number of max trials is not reached
-            NextTrack();
+        NextTrack();
+        if(solver != null)
+        {
+            if (solver.GetEpisodeCount() > trackNumber * maxTrials)
+                solver.StopAcademy(); // Finish the inference
         }
     }
 }

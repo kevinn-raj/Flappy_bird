@@ -156,15 +156,20 @@ public class Solver_Inference : Agent
         float aux_input = Academy.Instance.EnvironmentParameters.GetWithDefault("aux_input", 1f);
         return aux_input;
     }
-
-    private void OnCollisionEnter(Collision collidedObj)
-    {  
+    public int GetEpisodeCount()
+    {
+        return Academy.Instance.EpisodeCount;
     }
+ 
     private void RegisterScore()
     {
         // log the scores into TensorBoard
         var statsRecorder = Academy.Instance.StatsRecorder;
-        statsRecorder.Add("Score", score);
+        // Record the most recent Score
+        statsRecorder.Add("Score", score, StatAggregationMethod.MostRecent);
+
+        // Record the episode count
+        statsRecorder.Add("Episode", Academy.Instance.EpisodeCount, StatAggregationMethod.MostRecent);
         Debug.Log(score);
     }
 
