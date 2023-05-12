@@ -173,10 +173,7 @@ public class Solver_Inference : Agent
         // Loooooose 
         if (collidedObj.gameObject.CompareTag("Ground") || 
             collidedObj.gameObject.CompareTag("Obstacle_top") ||
-            collidedObj.gameObject.CompareTag("Obstacle_bottom"))
-            {
-                float CollideReward = -1f;
-                AddReward(CollideReward);
+            collidedObj.gameObject.CompareTag("Obstacle_bottom")){
             EndEpisode();
         } 
         // SCOREEEEEEEEEEEEE!
@@ -184,35 +181,14 @@ public class Solver_Inference : Agent
         {
             score++;
             maxScore = Mathf.Max(score, maxScore);
-            try
-            {
-                // Goal reached
-                if (score >= gen.n_obstacles)
-                {   
-                    // only end the episode on training
+            try{// Goal reached
+                if (score >= gen.n_obstacles){  // only end the episode on training
                     if (isTraining)
-                    { // For reaching the goal
-                        float reward_goal = 1f;
-                        AddReward(reward_goal);
                         EndEpisode();
-                    }
                 }
-            }
-            catch (Exception e) { }
-        }
-        else if (collidedObj.gameObject.CompareTag("Limit"))
-        {
-        float punishment = -.5f;
-            AddReward(punishment);  // Prevent to stay on the roof
+            }catch (Exception e) { }
+            
         }
     }
 
-    private void OnTriggerStay(Collider collidedObj)
-    {
-        if (collidedObj.gameObject.CompareTag("Limit"))
-        {
-            float punishment = -.5f;
-            AddReward(punishment);  // Prevent to stay on the roof
-        }
-    }
 }

@@ -6,6 +6,7 @@ using UnityEngine.Events;
 
 public class SpawnLevels : MonoBehaviour
 {
+    [Tooltip("Relative to Resources")]
     public string TracksRootFolder = "Tracks/"; // Under resources
     public List<string> aux_list = new List<string>{"-1", "-0,5", "0", "0,5", "1"};
     public float aux_input = 1f;
@@ -54,7 +55,7 @@ public class SpawnLevels : MonoBehaviour
     public void NextTrack(){
         // Debug.Log("Next!!");
         // without extension
-        actualPrefab = Resources.Load<GameObject>(TracksRootFolder + Convert.ToString(aux_input) + "/" + Convert.ToString(track_counter));
+        actualPrefab = Resources.Load<GameObject>(TracksRootFolder + "/" + Convert.ToString(aux_input) + "/" + Convert.ToString(track_counter));
         actualTrackObj = Instantiate(actualPrefab, transform.position, Quaternion.identity);
         track_counter++; // Increment
         if(track_counter == trackNumber){ // 

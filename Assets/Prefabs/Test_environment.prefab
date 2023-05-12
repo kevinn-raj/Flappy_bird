@@ -94,7 +94,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 37a095ba137999e5e89f45f658a0be84, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  TracksRootFolder: Tracks/
+  TracksRootFolder: Tracks
   aux_list:
   - -1
   - -0,5
@@ -102,9 +102,13 @@ MonoBehaviour:
   - 0,5
   - 1
   aux_input: 1
+  aux_from_env: 1
+  track_counter: 0
   trackNumber: 75
   n_obstacles: 10
+  maxTrials: 100
   solver: {fileID: 3626417602682334941}
+  timeScale: 1
 --- !u!1 &1107323166820420953
 GameObject:
   m_ObjectHideFlags: 0
@@ -376,7 +380,7 @@ Transform:
   - {fileID: 9210471639545475467}
   - {fileID: 3707797175112187878}
   m_Father: {fileID: 0}
-  m_RootOrder: 3
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &3013190244279592637
 GameObject:
@@ -649,6 +653,9 @@ MonoBehaviour:
   roof: {fileID: 1107323166820420953}
   gen: {fileID: 4186786274161422180}
   useObs: 1
+  OnReset:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!114 &6820997409948942568
 MonoBehaviour:
   m_ObjectHideFlags: 0
