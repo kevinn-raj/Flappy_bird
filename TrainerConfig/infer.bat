@@ -1,7 +1,7 @@
 @echo off
 REM run with 50 instances
 set env="Z:\Git\Flappy_bird\Builds\Windows\Inference\Flappy_bird.exe"
-set run_name=InferPCG_2_aux_0.5
+set run_name=InferPCG_2_aux_0
 set initRUN_ID=PCG_2
 REM resume previous training
 REM mlagents-learn ARLPCG_curriculum.yaml --num-envs 50 --run-id run_name --no-graphics --env env --resume
