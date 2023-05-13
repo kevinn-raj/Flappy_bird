@@ -7,6 +7,9 @@ using Unity.MLAgents;
 using Unity.MLAgents.Actuators;
 using Unity.MLAgents.Sensors;
 using Random = UnityEngine.Random;
+using System.IO;
+using System.Globalization; // For float string conversion
+
 
 public class Solver_Inference : Agent
 {
@@ -30,6 +33,9 @@ public class Solver_Inference : Agent
     public int score = 0;
     [SerializeField]
     public  int maxScore = 0;
+    public string csv_path; // Where the csv should be save
+    static StreamWriter writer; // for the csv export
+    public List<int> scores;
 
     public GameObject ground;
     public GameObject roof;
@@ -42,7 +48,7 @@ public class Solver_Inference : Agent
     public UnityEvent OnReset;
 
     EnvironmentParameters m_ResetParams;
-
+       
     
     public float normalize01(float actual, float minimum, float maximum){
         return (actual - minimum)/(maximum - minimum);}
@@ -117,10 +123,25 @@ public class Solver_Inference : Agent
         // Reset
         Reset();
     }
+
+    public void Awake()
+    {
+        
+        scores = new List<int>();
+    }
+
+
     public void Start()
     {
         if(gen == null)
             Debug.LogError("Spawner not assigned");
+
+        // #########################################################################
+        // IMPORTANT to properly convert float to string with "." as decimal not ","
+        System.Globalization.CultureInfo customCulture = (System.Globalization.CultureInfo)System.Threading.Thread.CurrentThread.CurrentCulture.Clone();
+        customCulture.NumberFormat.NumberDecimalSeparator = ".";
+        System.Threading.Thread.CurrentThread.CurrentCulture = customCulture;
+        // ######################################################################### 
     }
     public void Update(){
 
@@ -133,7 +154,19 @@ public class Solver_Inference : Agent
 
         float reward = 0.01f;
         AddReward(reward); // To motivate to stay alive
-
+    }
+    void OnApplicationQuit()
+    {
+        string filename_prefix = csv_path + "/" + GetAuxInput().ToString() + "-";
+        int suffix = 0; //pick a number for suffix
+        while (File.Exists(filename_prefix + suffix.ToString() + ".csv"))
+            suffix++;
+        writer = new StreamWriter(filename_prefix + suffix.ToString() + ".csv", true); // Append in case it still exists regardless of the previous condition, hence the keyword true
+        foreach (int i in scores)
+        {
+            writer.WriteLine(i);
+        }
+        writer.Close();
     }
 
     private void Reset()
@@ -166,11 +199,10 @@ public class Solver_Inference : Agent
         // log the scores into TensorBoard
         var statsRecorder = Academy.Instance.StatsRecorder;
         // Record the most recent Score
-        statsRecorder.Add("Score", score, StatAggregationMethod.MostRecent);
-
+        statsRecorder.Add("Score", score, StatAggregationMethod.Average);
+        scores.Add(score);
         // Record the episode count
         statsRecorder.Add("Episode", Academy.Instance.EpisodeCount, StatAggregationMethod.MostRecent);
-        Debug.Log(score);
     }
 
     private void OnTriggerEnter(Collider collidedObj)
