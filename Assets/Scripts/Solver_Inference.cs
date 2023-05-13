@@ -34,8 +34,10 @@ public class Solver_Inference : Agent
     [SerializeField]
     public  int maxScore = 0;
     public string csv_path; // Where the csv should be save
-    static StreamWriter writer; // for the csv export
+    StreamWriter writer; // for the csv export
     public List<int> scores;
+    public bool saveScoresToCSV = false;
+    float aux;
 
     public GameObject ground;
     public GameObject roof;
@@ -43,7 +45,7 @@ public class Solver_Inference : Agent
     
 
     public bool useObs = true;
-
+    bool isTheBeginning = true;
 
     public UnityEvent OnReset;
 
@@ -126,8 +128,10 @@ public class Solver_Inference : Agent
 
     public void Awake()
     {
-        
         scores = new List<int>();
+        // for the file output
+
+
     }
 
 
@@ -142,6 +146,8 @@ public class Solver_Inference : Agent
         customCulture.NumberFormat.NumberDecimalSeparator = ".";
         System.Threading.Thread.CurrentThread.CurrentCulture = customCulture;
         // ######################################################################### 
+
+        startingPosition = transform.position;
     }
     public void Update(){
 
@@ -157,16 +163,6 @@ public class Solver_Inference : Agent
     }
     void OnApplicationQuit()
     {
-        string filename_prefix = csv_path + "/" + GetAuxInput().ToString() + "-";
-        int suffix = 0; //pick a number for suffix
-        while (File.Exists(filename_prefix + suffix.ToString() + ".csv"))
-            suffix++;
-        writer = new StreamWriter(filename_prefix + suffix.ToString() + ".csv", true); // Append in case it still exists regardless of the previous condition, hence the keyword true
-        foreach (int i in scores)
-        {
-            writer.WriteLine(i);
-        }
-        writer.Close();
     }
 
     private void Reset()
@@ -177,7 +173,7 @@ public class Solver_Inference : Agent
         float groundMaxY = ground.GetComponent<Collider>().bounds.max.y;
         float roofMinY = roof.GetComponent<Collider>().bounds.min.y;
         //Reset Movement and Position
-        transform.localPosition = new Vector3(startingPosition.x, Random.Range(groundMaxY, roofMinY) , startingPosition.z);
+        transform.position = new Vector3(startingPosition.x, Random.Range(groundMaxY+.5f, roofMinY-.5f) , startingPosition.z);
         rBody.velocity = Vector3.zero;
         
         OnReset.Invoke();
@@ -186,8 +182,8 @@ public class Solver_Inference : Agent
         Academy.Instance.Dispose(); // Stop the academy
     }
     public float GetAuxInput(){
-        float aux_input = Academy.Instance.EnvironmentParameters.GetWithDefault("aux_input", 1f);
-        return aux_input;
+        aux = Academy.Instance.EnvironmentParameters.GetWithDefault("aux_input", 1f);
+        return aux;
     }
     public int GetEpisodeCount()
     {
@@ -203,6 +199,18 @@ public class Solver_Inference : Agent
         scores.Add(score);
         // Record the episode count
         statsRecorder.Add("Episode", Academy.Instance.EpisodeCount, StatAggregationMethod.MostRecent);
+
+        if(saveScoresToCSV){
+            if (!isTheBeginning) { // Only write if it is not the beginning
+        string filename_prefix = csv_path + "/" + aux.ToString() + "-";
+        float suffix = Random.Range(0, 500000f); //pick a number for suffix
+        while (File.Exists(filename_prefix + suffix.ToString() + ".csv"))
+            suffix = Random.Range(0, 500000f);
+        writer = new StreamWriter(filename_prefix + suffix.ToString() + ".csv", true); // Append in case it still exists regardless of the previous condition, hence the keyword true
+        writer.WriteLine(score.ToString());
+        writer.Close();
+        }else isTheBeginning = false;
+        }
     }
 
     private void OnTriggerEnter(Collider collidedObj)
