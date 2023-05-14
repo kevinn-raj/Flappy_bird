@@ -20,6 +20,8 @@ public class RuledPCG : MonoBehaviour
     public float obst_speed = 3f;
 
     public bool isControledAuto = false;
+    [Tooltip("Set to bigger than 0 if you want the random to be fixed")]
+    public int seed = 0;
     [Range(1.12f, 4f)] public float heur_hdist_min = 1.12f;
     [Range(1.12f, 4f)] public float heur_hdist_max = 4f;
     [Range(2f, 5f)] public float heur_height_min = 2f;
@@ -46,6 +48,11 @@ public class RuledPCG : MonoBehaviour
         top_maxy = roof.GetComponent<Collider>().bounds.min.y;
 
         resetPos = transform.position;
+        
+        if(seed != 0)
+        { // Set the seed
+            Random.InitState(seed);
+        }
     }
 
     // Update is called once per frame
@@ -77,6 +84,13 @@ public class RuledPCG : MonoBehaviour
             heur_hdist_max = Academy.Instance.EnvironmentParameters.GetWithDefault("heur_hdist_max", 4f);
             heur_height_min = Academy.Instance.EnvironmentParameters.GetWithDefault("heur_height_min", 2f);
             heur_height_max = Academy.Instance.EnvironmentParameters.GetWithDefault("heur_height_max", 5f);
+        }
+        else
+        {
+            if (seed != 0)
+            { // Set the seed
+                Random.InitState(seed);
+            }
         }
 
         // Request decision if without Decision requester
