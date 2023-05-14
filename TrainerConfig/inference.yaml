@@ -2,7 +2,7 @@ behaviors:
   Solver:
     trainer_type: ppo
   
-    max_steps: 1e6
+    max_steps: 5e6
     time_horizon: 64
     summary_freq: 1000
     checkpoint_interval: 10000
@@ -51,26 +51,32 @@ environment_parameters:
         completion_criteria:
           measure: progress
           behavior: Solver
-          threshold: .3
+          threshold: .2
+          min_lesson_length: 100
+        value: 1
+      - name: Lesson2 # The '-' is important as this is a list
+        completion_criteria:
+          measure: progress
+          behavior: Solver
+          threshold: .4
+        value: 0.5
+      - name: Lesson3 # The '-' is important as this is a list
+        completion_criteria:
+          measure: progress
+          behavior: Solver
+          threshold: .6
           min_lesson_length: 100
         value: 0
-#      - name: Lesson2 # The '-' is important as this is a list
-#        completion_criteria:
-#          measure: progress
-#          behavior: Solver
-#          threshold: .5
-#        value: -1
-#      - name: Lesson3 # The '-' is important as this is a list
-#        completion_criteria:
-#          measure: progress
-#          behavior: Solver
-#          threshold: .75
-#          min_lesson_length: 100
-#        value: 1
-#      - name: Lesson4 # The '-' is important as this is a list
-#        completion_criteria:
-#          measure: progress
-#          behavior: Solver
-#          threshold: .95
-#        value: -1
+      - name: Lesson4 # The '-' is important as this is a list
+        completion_criteria:
+          measure: progress
+          behavior: Solver
+          threshold: .8
+        value: -0.5
+      - name: Lesson5 # The '-' is important as this is a list
+        completion_criteria:
+          measure: progress
+          behavior: Solver
+          threshold: .8
+        value: -1
 
