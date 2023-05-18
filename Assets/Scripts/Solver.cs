@@ -167,7 +167,7 @@ public class Solver : Agent
         float reward = 0.01f;
         AddReward(reward); // To motivate to stay alive
         float aux = Generator.GetComponent<Generator>().aux_input;
-        float aux_weight = 1f;
+        float aux_weight = 1f; // alpha
         RewardTheGen(reward * aux * aux_weight);
 
     }
